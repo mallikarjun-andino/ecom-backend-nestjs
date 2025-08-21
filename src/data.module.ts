@@ -1,0 +1,25 @@
+import { Module } from '@nestjs/common';
+
+import { Message } from './customs/query/message.entity';
+import { DatasourceManager } from './shared/database/datasource.manager';
+import {
+  ITenantConfigProvider,
+  TENANT_CONFIG_PROVIDER,
+} from './shared/database/interfaces/tenant-config-provider';
+import { SharedModule } from './shared/shared.module';
+
+@Module({
+  imports: [SharedModule],
+  providers: [
+    {
+      provide: DatasourceManager,
+      useFactory: (
+        tenantConfigProvider: ITenantConfigProvider,
+      ): DatasourceManager =>
+        new DatasourceManager(tenantConfigProvider, [Message]),
+      inject: [TENANT_CONFIG_PROVIDER],
+    },
+  ],
+  exports: [DatasourceManager],
+})
+export class DataModule {}
