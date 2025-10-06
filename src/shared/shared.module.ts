@@ -2,7 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 
-import databaseConfig from '../config/database.config';
+import { loadEnvConfig } from '../config/config.loader';
 
 import { TENANT_CONFIG_PROVIDER } from './database/interfaces/tenant-config-provider';
 import { EnvTenantConfigProvider } from './database/providers/env-tenant-config.provider';
@@ -10,7 +10,16 @@ import { CustomExceptionFilter } from './filters/customExceptionFilter';
 
 @Global()
 @Module({
-  imports: [ConfigModule.forFeature(databaseConfig)],
+  imports: [
+    ConfigModule.forRoot({
+      load: [
+        loadEnvConfig('database'),
+        loadEnvConfig('logging'),
+        loadEnvConfig('app'),
+      ],
+      isGlobal: true,
+    }),
+  ],
   providers: [
     {
       provide: TENANT_CONFIG_PROVIDER,

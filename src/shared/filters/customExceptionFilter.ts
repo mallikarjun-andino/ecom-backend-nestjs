@@ -38,7 +38,7 @@ export class CustomExceptionFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       method: request.method,
-      ...(process.env.NODE_ENV === 'development' && {
+      ...(process.env.NODE_ENV === 'local' && {
         stack: exception instanceof Error ? exception.stack : undefined,
       }),
     };

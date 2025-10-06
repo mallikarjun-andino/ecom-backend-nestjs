@@ -28,8 +28,12 @@ management, safe migrations, advanced logging, and operational endpoints for clo
     - Request validation using class-validator and class-transformer.
 
 - **Environment & Configuration:**
-    - Environment management with dotenv and @nestjs/config.
-    - Secure, environment-specific configuration for database, logging, and app settings.
+    - Spring Boot-style configuration system with environment-specific config files and precedence rules.
+    - Configuration sources: base config files → environment-specific configs → environment variables (highest precedence).
+    - Environment-specific folders: `src/config/environments/{NODE_ENV}/` for staging, production, local overrides.
+    - Type-safe configuration access through @nestjs/config with automatic config loading based on NODE_ENV.
+    - Supports multiple config types (database, logging, app) with easy extensibility for new configurations.
+    - Reduces environment variable complexity by handling most configuration through environment-specific files, reserving environment variables primarily for secrets and deployment-specific overrides.
 
 - **Testing & CI/CD:**
     - Pre-configured Jest for unit, integration, and e2e tests.
@@ -51,7 +55,7 @@ yarn build
 ### Run Locally
 
 ```sh
-yarn start:dev # For development
+yarn start:local # For local development
 yarn start:prod     # For production
 ```
 
@@ -94,23 +98,23 @@ yarn lint     # Run ESLint to check for code quality issues
 
 - Copy `.env.example` to `.env` and update required environment variables for your local setup.
 
-### Create a New Project from This Template
+## Configuration System
 
-You can use this repository as a template to start a new project:
+This project uses a Spring Boot-inspired configuration system with environment-specific overrides and clear precedence rules.
 
-1. Go to [GitHub](https://github.com/) and navigate to this `catalyst-nest` repository.
-2. Click the **"Use this template"** button at the top right.
-3. Enter a name for your new repository and choose your organization or user.
-4. Click **"Create repository from template"**.
-5. Clone your new repository and update the project details as needed.
+### Key Features
+- **Environment-specific config files**: `src/config/environments/{NODE_ENV}/` for staging, production, local overrides
+- **Clear precedence**: Environment variables → environment-specific configs → base config files
+- **Reduced complexity**: Most configuration handled through files, environment variables reserved for secrets
+- **Type-safe access**: Full TypeScript support through @nestjs/config
 
-Or, [follow the official GitHub documentation](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template#creating-a-repository-from-a-template).
+### Quick Start
+1. **Base config**: Create `src/config/{configName}.config.ts`
+2. **Register**: Add `loadEnvConfig('configName')` to `src/shared/shared.module.ts`
+3. **Environment overrides**: Create `src/config/environments/production/{configName}.config.ts` as needed
+4. **Access**: Use `ConfigService` in your code
 
-### Troubleshooting
-
-- If you see `Cannot find module '@nestjs/config'`, make sure it is listed in your `dependencies` and not just `devDependencies`.
-- For Docker build issues, ensure your `.dockerignore` is present and up to date.
-- For migration or database errors, check your environment variables and database connectivity.
+**📖 For detailed usage, examples, and migration guide, see [Configuration Documentation](./docs/configuration.md)**
 
 
 > For more details on architecture, migration safety, multi-tenancy, and operational best practices, see the inline code
