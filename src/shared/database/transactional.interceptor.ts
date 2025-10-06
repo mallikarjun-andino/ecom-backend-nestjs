@@ -24,6 +24,9 @@ export class TransactionalInterceptor implements NestInterceptor {
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    // eslint-disable-next-line
+    const request: any = context.switchToHttp().getRequest();
+    this.logIncomingRequest(request);
     const isTransactional = this.reflector.get<boolean>(
       TRANSACTIONAL_KEY,
       context.getHandler(),
@@ -32,8 +35,6 @@ export class TransactionalInterceptor implements NestInterceptor {
       return next.handle();
     }
 
-    // eslint-disable-next-line
-    const request: any = context.switchToHttp().getRequest();
     // eslint-disable-next-line
     const tenantContext: TenantContext = request.tenantContext;
 
@@ -69,5 +70,17 @@ export class TransactionalInterceptor implements NestInterceptor {
         }
       }),
     );
+  }
+
+  /* eslint-disable */
+  private logIncomingRequest(request: any): void {
+    const method = request.method;
+    const path = request.originalUrl || request.url;
+    const queryString =
+      Object.keys(request.query).length > 0
+        ? `?${new URLSearchParams(request.query as any).toString()}`
+        : '';
+    const fullUrl = path + queryString;
+    this.logger.log(`received request: ${method} ${fullUrl}`);
   }
 }

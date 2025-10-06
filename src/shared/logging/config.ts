@@ -1,5 +1,7 @@
 import * as os from 'os';
 
+import { stdTimeFunctions } from 'pino';
+
 import { errSerializer, reqSerializer, resSerializer } from './serializers';
 
 /* eslint-disable */
@@ -12,6 +14,15 @@ export const pinoHttp = {
   },
   formatters: {
     level: (label) => ({ level: label.toUpperCase() }),
+    log: (object) => {
+      if (object.responseTime !== undefined) {
+        return {
+          ...object,
+          duration: `${object.responseTime}ms`,
+        };
+      }
+      return object;
+    },
   },
   serializers: {
     req: reqSerializer,
@@ -32,7 +43,7 @@ export const pinoHttp = {
     ],
     censor: '[REDACTED]',
   },
-  timestamp: () => `,"time":"${new Date().toISOString()}"`,
+  timestamp: () => stdTimeFunctions.isoTime(),
   ...(process.env.LOG_FORMAT === 'pretty' && {
     transport: {
       target: 'pino-pretty',

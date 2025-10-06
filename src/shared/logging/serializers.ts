@@ -2,18 +2,13 @@ import { stdSerializers } from 'pino';
 
 /* eslint-disable */
 export function reqSerializer(req: any) {
+  const tenantContext = {
+    businessUnit: req.headers['x-business-unit'],
+    countryCode: req.headers['x-country-code'],
+  };
   return {
     id: req.id,
-    method: req.method,
-    url: req.url,
-    headers: {
-      host: req.headers.host,
-      'user-agent': req.headers['user-agent'],
-      'content-length': req.headers['content-length'],
-      'content-type': req.headers['content-type'],
-    },
-    remoteAddress: req.remoteAddress,
-    remotePort: req.remotePort,
+    ...tenantContext,
   };
 }
 
