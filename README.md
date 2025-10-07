@@ -45,6 +45,14 @@ management, safe migrations, advanced logging, and operational endpoints for clo
     - Production-ready Dockerfile with multi-stage build, healthcheck, commit hash injection, and non-root user.
     - .dockerignore for efficient builds.
 
+- **Open Telemetry Support:**
+    - Basic OpenTelemetry setup for distributed tracing and metrics collection.
+    - Trace context propagation for downstream requests.
+    - See [OpenTelemetry Integration Guide](./docs/opentelemetry.md) for details and instructions on how to run with OpenTelemetry.
+
+- **Code Quality:**
+    - ESLint and Prettier configurations for a consistent code style.
+
 ## How to Build, Run, and Test
 
 ### Build Locally
@@ -77,7 +85,7 @@ yarn test:e2e       # End-to-end tests
 
 ```sh
 docker build --build-arg COMMIT_HASH=$(git rev-parse HEAD) -t catalyst-nestjs .
-docker run -p 3000:3000 catalyst-nestjs
+docker run  -e NODE_ENV="staging" -p 3000:3000 catalyst-nestjs
 ```
 
 ### Operational Endpoints

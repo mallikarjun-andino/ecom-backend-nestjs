@@ -1,6 +1,7 @@
 # Configuration System
 
-This project uses a Spring Boot-inspired configuration system with environment-specific overrides and clear precedence rules.
+This project uses a Spring Boot-inspired configuration system with environment-specific overrides and clear precedence
+rules.
 
 ## Configuration Structure
 
@@ -56,8 +57,8 @@ export default registerAs('app', () => ({
 // In src/shared/shared.module.ts
 ConfigModule.forRoot({
   load: [
-    loadEnvConfig('database'), 
-    loadEnvConfig('logging'), 
+    loadEnvConfig('database'),
+    loadEnvConfig('logging'),
     loadEnvConfig('app')  // <- Add your new config here
   ],
   isGlobal: true,
@@ -81,6 +82,7 @@ export default registerAs('app', () => ({
 ```
 
 **Configuration File Locations:**
+
 - **Base configs**: `src/config/{configName}.config.ts`
 - **Local overrides**: `src/config/environments/local/{configName}.config.ts`
 - **Staging overrides**: `src/config/environments/staging/{configName}.config.ts`
@@ -95,14 +97,15 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MyService {
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {
+  }
 
   someMethod() {
     // Get specific config values
     const dbHost = this.configService.get<string>('database.databases.serhafen-us.host');
     const logLevel = this.configService.get<string>('logging.level');
     const appPort = this.configService.get<number>('app.port');
-    
+
     // Get entire config namespaces
     const databaseConfig = this.configService.get('database');
     const loggingConfig = this.configService.get('logging');
@@ -113,16 +116,19 @@ export class MyService {
 ### 4. Setting Up Different Environments
 
 **Local Development:**
+
 - Set `NODE_ENV=local` (or leave unset, defaults to 'development')
 - Create `src/config/environments/local/` folder with overrides
 - Use `.env` file for local environment variables
 
 **Staging:**
+
 - Set `NODE_ENV=staging`
 - Create `src/config/environments/staging/` folder with staging-specific configs
 - Override with staging environment variables as needed
 
 **Production:**
+
 - Set `NODE_ENV=production`
 - Create `src/config/environments/production/` folder with production configs
 - Use secure environment variable injection (K8s secrets, Docker secrets, etc.)
@@ -156,6 +162,7 @@ format: process.env.LOG_FORMAT || 'json'
 ### Example 3: Secrets vs Configuration Files
 
 **Use environment variables for secrets:**
+
 ```bash
 # In production deployment
 DB_PASSWORD=secret-password
@@ -164,13 +171,14 @@ JWT_SECRET=jwt-secret
 ```
 
 **Use config files for everything else:**
+
 ```typescript
 // src/config/environments/production/database.config.ts
 host: process.env.DB_HOST || 'prod-database-cluster.company.com',
 port: parseInt(process.env.DB_PORT || '5432', 10),
-maxConnections: 50,  // Production-specific setting
-ssl: true,           // Production requires SSL
+maxConnections: 50,
+ssl:true, 
 ```
 
-
-The system automatically loads the right configuration based on your `NODE_ENV`, with environment variables always taking highest precedence for deployment flexibility.
+The system automatically loads the right configuration based on your `NODE_ENV`, with environment variables always
+taking highest precedence for deployment flexibility.

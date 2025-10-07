@@ -7,10 +7,13 @@ coverage
 .DS_Store
 .git
 .gitignore
-.vscode
 .idea
 *.md
 *.log
+docker
 Dockerfile
 .dockerignore
+.vscode/
+docs/
+nest-cli.json
 

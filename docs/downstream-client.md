@@ -1,6 +1,6 @@
 # Creating a Client Class for Downstream Requests
 
-This guide explains how to create a client class for making downstream HTTP requests in this project, leveraging the
+Create a client class for making downstream HTTP requests in this project, leveraging the
 circuit breaker client and automatic trace header propagation.
 
 ## 1. Use the Circuit Breaker HTTP Client
@@ -148,5 +148,6 @@ export default registerAs("clients", () => ({
 
 ---
 
-For more details, see the [Opossum Circuit Breaker documentation](https://nodeshift.dev/opossum/) and the
-main [README](./README.md).
+For more details, see the [Opossum Circuit Breaker documentation](https://nodeshift.dev/opossum/),
+[telemetry](opentelemetry.md) and the
+main [README](../README.md).

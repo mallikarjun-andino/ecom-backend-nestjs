@@ -22,7 +22,7 @@ export function createPinoHttpConfig(configService: ConfigService) {
         if (object.responseTime !== undefined) {
           return {
             ...object,
-            duration: `${object.responseTime}ms`,
+            responseTime: `${object.responseTime}ms`,
           };
         }
         return object;
