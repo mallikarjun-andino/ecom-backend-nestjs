@@ -16,6 +16,7 @@ import { CustomExceptionFilter } from './filters/customExceptionFilter';
         loadEnvConfig('database'),
         loadEnvConfig('logging'),
         loadEnvConfig('app'),
+        loadEnvConfig('clients'),
       ],
       isGlobal: true,
     }),

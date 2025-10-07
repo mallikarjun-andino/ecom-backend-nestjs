@@ -8,6 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CustomsModule } from './customs/module';
 import { DataModule } from './data.module';
+import { DemoModule } from './demo/demo.module';
 import { TransactionalInterceptor } from './shared';
 import { MigrationService } from './shared/database/migrations/migration.service';
 import { TenantContextMiddleware } from './shared/kernel/tenant/tenant-context.middleware';
@@ -27,6 +28,7 @@ import { SharedModule } from './shared/shared.module';
     }),
     ActuatorModule,
     DataModule,
+    DemoModule,
   ],
   controllers: [AppController],
   providers: [

@@ -29,11 +29,13 @@ management, safe migrations, advanced logging, and operational endpoints for clo
 
 - **Environment & Configuration:**
     - Spring Boot-style configuration system with environment-specific config files and precedence rules.
-    - Configuration sources: base config files → environment-specific configs → environment variables (highest precedence).
+    - Configuration sources: base config files → environment-specific configs → environment variables (highest
+      precedence).
     - Environment-specific folders: `src/config/environments/{NODE_ENV}/` for staging, production, local overrides.
     - Type-safe configuration access through @nestjs/config with automatic config loading based on NODE_ENV.
     - Supports multiple config types (database, logging, app) with easy extensibility for new configurations.
-    - Reduces environment variable complexity by handling most configuration through environment-specific files, reserving environment variables primarily for secrets and deployment-specific overrides.
+    - Reduces environment variable complexity by handling most configuration through environment-specific files,
+      reserving environment variables primarily for secrets and deployment-specific overrides.
 
 - **Testing & CI/CD:**
     - Pre-configured Jest for unit, integration, and e2e tests.
@@ -100,21 +102,29 @@ yarn lint     # Run ESLint to check for code quality issues
 
 ## Configuration System
 
-This project uses a Spring Boot-inspired configuration system with environment-specific overrides and clear precedence rules.
+This project uses a Spring Boot-inspired configuration system with environment-specific overrides and clear precedence
+rules.
 
 ### Key Features
+
 - **Environment-specific config files**: `src/config/environments/{NODE_ENV}/` for staging, production, local overrides
 - **Clear precedence**: Environment variables → environment-specific configs → base config files
 - **Reduced complexity**: Most configuration handled through files, environment variables reserved for secrets
 - **Type-safe access**: Full TypeScript support through @nestjs/config
 
 ### Quick Start
+
 1. **Base config**: Create `src/config/{configName}.config.ts`
 2. **Register**: Add `loadEnvConfig('configName')` to `src/shared/shared.module.ts`
 3. **Environment overrides**: Create `src/config/environments/production/{configName}.config.ts` as needed
 4. **Access**: Use `ConfigService` in your code
 
 **📖 For detailed usage, examples, and migration guide, see [Configuration Documentation](./docs/configuration.md)**
+
+## Client Class & Trace Header Propagation
+
+For guidance on creating a client class for downstream requests and how trace headers (traceparent) are automatically
+injected for distributed tracing, see [docs/downstream-client.md](./docs/downstream-client.md).
 
 
 > For more details on architecture, migration safety, multi-tenancy, and operational best practices, see the inline code
