@@ -7,9 +7,8 @@ import { ActuatorModule } from './actuator/actuator.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CustomsModule } from './customs/module';
-import { DataModule } from './data.module';
 import { DemoModule } from './demo/demo.module';
-import { TransactionalInterceptor } from './shared';
+import { RequestInterceptor } from './shared';
 import { MigrationService } from './shared/database/migrations/migration.service';
 import { TenantContextMiddleware } from './shared/kernel/tenant/tenant-context.middleware';
 import { createPinoHttpConfig } from './shared/logging/config';
@@ -27,7 +26,6 @@ import { SharedModule } from './shared/shared.module';
       inject: [ConfigService],
     }),
     ActuatorModule,
-    DataModule,
     DemoModule,
   ],
   controllers: [AppController],
@@ -35,7 +33,7 @@ import { SharedModule } from './shared/shared.module';
     AppService,
     {
       provide: APP_INTERCEPTOR,
-      useClass: TransactionalInterceptor,
+      useClass: RequestInterceptor,
     },
     MigrationService,
     Reflector,

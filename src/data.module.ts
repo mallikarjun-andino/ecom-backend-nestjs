@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
 import { Message } from './customs/query/message.entity';
 import { DatasourceManager } from './shared/database/datasource.manager';
@@ -8,6 +8,7 @@ import {
 } from './shared/database/interfaces/tenant-config-provider';
 import { SharedModule } from './shared/shared.module';
 
+@Global()
 @Module({
   imports: [SharedModule],
   providers: [
