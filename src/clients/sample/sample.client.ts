@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
-import { ICircuitHttpClient } from '../../shared';
+import { ICircuitHttpClient } from '@shared';
+
 import { SAMPLE_HTTP_CLIENT } from '../clients.token';
 
 @Injectable()

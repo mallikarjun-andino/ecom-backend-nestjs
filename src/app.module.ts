@@ -3,16 +3,17 @@ import { ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { LoggerModule } from 'nestjs-pino';
 
+import { RequestInterceptor } from '@shared';
+import { MigrationService } from '@shared/database/migrations/migration.service';
+import { TenantContextMiddleware } from '@shared/kernel/tenant/tenant-context.middleware';
+import { createPinoHttpConfig } from '@shared/logging/config';
+import { SharedModule } from '@shared/shared.module';
+
 import { ActuatorModule } from './actuator/actuator.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CustomsModule } from './customs/module';
 import { DemoModule } from './demo/demo.module';
-import { RequestInterceptor } from './shared';
-import { MigrationService } from './shared/database/migrations/migration.service';
-import { TenantContextMiddleware } from './shared/kernel/tenant/tenant-context.middleware';
-import { createPinoHttpConfig } from './shared/logging/config';
-import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [

@@ -1,12 +1,13 @@
 import { Global, Module } from '@nestjs/common';
 
-import { Message } from './customs/query/message.entity';
-import { DatasourceManager } from './shared/database/datasource.manager';
+import { DatasourceManager } from '@shared/database/datasource.manager';
 import {
   ITenantConfigProvider,
   TENANT_CONFIG_PROVIDER,
-} from './shared/database/interfaces/tenant-config-provider';
-import { SharedModule } from './shared/shared.module';
+} from '@shared/database/interfaces/tenant-config-provider';
+import { SharedModule } from '@shared/shared.module';
+
+import { Message } from './customs/query/message.entity';
 
 @Global()
 @Module({

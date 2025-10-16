@@ -2,9 +2,10 @@ import { Inject, Injectable, Logger, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { FastifyRequest } from 'fastify';
 
-import { DatasourceManager } from '../../shared/database/datasource.manager';
-import { TransactionContext } from '../../shared/transaction/transaction-context';
-import { Transactional } from '../../shared/transaction/transactional-method.decorator';
+import { ISnsPublisher, SnsPublisherClient } from '@shared';
+import { DatasourceManager } from '@shared/database/datasource.manager';
+import { TransactionContext } from '@shared/transaction/transaction-context';
+import { Transactional } from '@shared/transaction/transactional-method.decorator';
 
 import { Message } from './message.entity';
 
@@ -17,6 +18,8 @@ export class QueryService extends TransactionContext {
   constructor(
     @Inject(REQUEST) private readonly request: FastifyRequest,
     private readonly datasourceManager: DatasourceManager,
+    @SnsPublisherClient('test-custom-events')
+    private readonly customsPublisher: ISnsPublisher,
   ) {
     super();
   }
@@ -24,7 +27,14 @@ export class QueryService extends TransactionContext {
   async findAll(): Promise<string[]> {
     this.logger.log('find all customs');
     const results = await this.findAllInTransaction();
-    this.logger.log('simulation publishing event');
+    await this.customsPublisher.publish(
+      {
+        type: 'CustomsListFetched',
+        at: new Date().toISOString(),
+        count: results.length,
+      },
+      { domain: 'customs' },
+    );
     return results;
   }
 
@@ -40,7 +50,10 @@ export class QueryService extends TransactionContext {
   async findOne(id: number): Promise<string> {
     this.logger.log(`Find a custom of id ${id}`);
     const result = await this.findOneInTransaction(id);
-    this.logger.log('simulation publishing event');
+    await this.customsPublisher.publish(
+      { type: 'CustomsFetched', id, at: new Date().toISOString() },
+      { domain: 'customs' },
+    );
     return result;
   }
   @Transactional()

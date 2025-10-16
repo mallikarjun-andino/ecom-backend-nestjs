@@ -2,8 +2,9 @@ import { HttpModule, HttpService } from '@nestjs/axios';
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { ICircuitHttpClient } from '../../shared';
-import { createCircuitBreakerClient } from '../../shared/http/circuit.factory';
+import { ICircuitHttpClient } from '@shared';
+import { createCircuitBreakerClient } from '@shared/http/circuit.factory';
+
 import { SAMPLE_HTTP_CLIENT } from '../clients.token';
 
 import { SampleClient } from './sample.client';

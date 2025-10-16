@@ -7,6 +7,7 @@ import { loadEnvConfig } from '../config/config.loader';
 import { TENANT_CONFIG_PROVIDER } from './database/interfaces/tenant-config-provider';
 import { EnvTenantConfigProvider } from './database/providers/env-tenant-config.provider';
 import { CustomExceptionFilter } from './filters/customExceptionFilter';
+import { SnsModule } from './sns';
 
 @Global()
 @Module({
@@ -17,9 +18,11 @@ import { CustomExceptionFilter } from './filters/customExceptionFilter';
         loadEnvConfig('logging'),
         loadEnvConfig('app'),
         loadEnvConfig('clients'),
+        loadEnvConfig('aws'),
       ],
       isGlobal: true,
     }),
+    SnsModule,
   ],
   providers: [
     {

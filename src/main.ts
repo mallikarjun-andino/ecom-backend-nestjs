@@ -7,8 +7,9 @@ import {
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
+import { MigrationService } from '@shared/database/migrations/migration.service';
+
 import { AppModule } from './app.module';
-import { MigrationService } from './shared/database/migrations/migration.service';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(

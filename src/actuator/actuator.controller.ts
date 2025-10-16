@@ -7,7 +7,7 @@ import {
 } from '@nestjs/terminus';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
-import { DatasourceManager } from '../shared/database/datasource.manager';
+import { DatasourceManager } from '@shared/database/datasource.manager';
 
 @Controller('actuator')
 export class ActuatorController {
