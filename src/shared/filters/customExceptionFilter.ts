@@ -5,13 +5,13 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { FastifyReply } from 'fastify';
 
 export class CustomExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(CustomExceptionFilter.name);
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
+    const response = ctx.getResponse<FastifyReply>();
     const request: any = ctx.getRequest();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -43,6 +43,6 @@ export class CustomExceptionFilter implements ExceptionFilter {
       }),
     };
 
-    response.status(status).json(errorResponse);
+    response.status(status).send(errorResponse);
   }
 }

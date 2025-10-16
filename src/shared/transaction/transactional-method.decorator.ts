@@ -7,11 +7,57 @@ import { TransactionContext } from './transaction-context';
 
 /* eslint-disable */
 function getTenantContext(instance: any, logger: Logger): TenantContext {
-  const tenantContext = instance.request?.tenantContext;
-  if (!tenantContext) {
-    logger.error('Missing tenant context for transactional operation');
-    throw new Error('Missing tenant context for transactional operation');
+  logger.debug('Attempting to get tenant context', {
+    hasRequest: !!instance.request,
+    requestKeys: instance.request
+      ? Object.keys(instance.request).slice(0, 10)
+      : [],
+    hasTenantContext: !!instance.request?.tenantContext,
+    headers: instance.request?.headers
+      ? {
+          'x-business-unit': instance.request.headers['x-business-unit'],
+          'x-country-code': instance.request.headers['x-country-code'],
+          'business-unit': instance.request.headers['business-unit'],
+          'country-code': instance.request.headers['country-code'],
+        }
+      : 'No headers',
+  });
+
+  // First, try to get from the tenantContext property set by middleware
+  let tenantContext = instance.request?.tenantContext;
+
+  // If not found, try to extract directly from headers
+  if (!tenantContext && instance.request?.headers) {
+    const businessUnit =
+      instance.request.headers['x-business-unit'] ??
+      instance.request.headers['business-unit'];
+    const countryCode =
+      instance.request.headers['x-country-code'] ??
+      instance.request.headers['country-code'];
+
+    if (businessUnit && countryCode) {
+      logger.debug('Extracting tenant context from headers directly');
+      tenantContext = { businessUnit, countryCode } as TenantContext;
+      // Set it on the request for future use
+      instance.request.tenantContext = tenantContext;
+    }
   }
+
+  if (!tenantContext) {
+    logger.error('Missing tenant context for transactional operation', {
+      hasRequest: !!instance.request,
+      requestType: instance.request?.constructor?.name,
+      availableProperties: instance.request
+        ? Object.keys(instance.request).slice(0, 20)
+        : [],
+      headers: instance.request?.headers || 'No headers',
+    });
+    throw new Error(
+      'Missing tenant context for transactional operation. Ensure x-business-unit and x-country-code headers are provided.',
+    );
+  }
+
+  logger.debug('Successfully retrieved tenant context', tenantContext);
   return tenantContext;
 }
 

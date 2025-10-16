@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
+import { FastifyRequest } from 'fastify';
 import { EntityManager } from 'typeorm';
 
 import { DatasourceManager } from '../../shared/database/datasource.manager';
@@ -13,7 +14,7 @@ export class QueryService {
   // mandatory to inject request to have request scope and
   // data source manager for annotation to work
   constructor(
-    @Inject(REQUEST) private readonly request: Request,
+    @Inject(REQUEST) private readonly request: FastifyRequest,
     private readonly datasourceManager: DatasourceManager,
   ) {}
 

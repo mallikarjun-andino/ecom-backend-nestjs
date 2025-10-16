@@ -1,5 +1,4 @@
 // import tenant
-export * from './kernel/tenant/tenant.decorator';
 export * from './kernel/tenant/tenant-context';
 
 // export transactional decorator and interceptor
