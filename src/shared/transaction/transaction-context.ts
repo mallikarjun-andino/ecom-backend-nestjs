@@ -15,6 +15,14 @@ class TransactionContext {
   ): Promise<T> {
     return TransactionContext.als.run({ entityManager }, fn);
   }
+
+  protected get entityManager(): EntityManager {
+    const context = TransactionContext.als.getStore();
+    if (!context) {
+      throw new Error('No transaction context available');
+    }
+    return context.entityManager;
+  }
 }
 
 export { TransactionContext };

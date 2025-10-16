@@ -108,7 +108,6 @@ async function setupQueryRunner(
 async function executeInTransaction(
   logger: Logger,
   queryRunner: any,
-  transactionContext: typeof TransactionContext,
   originalMethod: Function,
   instance: any,
   args: any[],
@@ -117,7 +116,7 @@ async function executeInTransaction(
 ) {
   try {
     injectEntityManagerIfNeeded(target, propertyKey, args, queryRunner.manager);
-    const result = await transactionContext.run(
+    const result = await TransactionContext.run(
       queryRunner.manager,
       async () => {
         return await originalMethod.apply(instance, args);
@@ -157,7 +156,6 @@ export function Transactional() {
       return executeInTransaction(
         logger,
         queryRunner,
-        TransactionContext,
         originalMethod,
         this,
         args,
