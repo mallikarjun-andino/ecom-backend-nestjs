@@ -6,3 +6,4 @@ export * from './kernel/interceptor/request.interceptor';
 
 export * from './http/circuit.http';
 export * from './sns';
+export * from './sqs';

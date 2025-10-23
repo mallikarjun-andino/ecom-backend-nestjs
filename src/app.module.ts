@@ -14,6 +14,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CustomsModule } from './customs/module';
 import { DemoModule } from './demo/demo.module';
+import { SampleSqsListenerModule } from './examples/sqs-listener.module.sample';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { DemoModule } from './demo/demo.module';
     }),
     ActuatorModule,
     DemoModule,
+    SampleSqsListenerModule,
   ],
   controllers: [AppController],
   providers: [

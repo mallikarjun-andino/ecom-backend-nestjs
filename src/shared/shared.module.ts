@@ -19,6 +19,7 @@ import { SnsModule } from './sns';
         loadEnvConfig('app'),
         loadEnvConfig('clients'),
         loadEnvConfig('aws'),
+        loadEnvConfig('queues'),
       ],
       isGlobal: true,
     }),
