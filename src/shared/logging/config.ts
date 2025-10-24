@@ -1,4 +1,5 @@
 import { ConfigService } from '@nestjs/config';
+import { trace } from '@opentelemetry/api';
 import { stdTimeFunctions } from 'pino';
 
 import { errSerializer, reqSerializer, resSerializer } from './serializers';
@@ -19,13 +20,28 @@ export function createPinoHttpConfig(configService: ConfigService) {
     formatters: {
       level: (label) => ({ level: label.toUpperCase() }),
       log: (object) => {
+        // Add OpenTelemetry trace context for non-HTTP flows
+        // (HTTP requests are auto-instrumented by otel.bootstrap.ts)
+        const span = trace.getActiveSpan();
+        const traceContext: Record<string, string> = {};
+
+        if (span) {
+          const spanContext = span.spanContext();
+          traceContext['trace_id'] = spanContext.traceId;
+          traceContext['span_id'] = spanContext.spanId;
+        }
+
         if (object.responseTime !== undefined) {
           return {
             ...object,
+            ...traceContext,
             responseTime: `${object.responseTime}ms`,
           };
         }
-        return object;
+        return {
+          ...object,
+          ...traceContext,
+        };
       },
     },
     serializers: {

@@ -1,7 +1,14 @@
 import { Logger } from '@nestjs/common';
 
+import {
+  TenantContext,
+  TENANT_HEADER_BUSINESS_UNIT,
+  TENANT_HEADER_BUSINESS_UNIT_ALT,
+  TENANT_HEADER_COUNTRY_CODE,
+  TENANT_HEADER_COUNTRY_CODE_ALT,
+} from '@shared';
+
 import { DatasourceManager } from '../database/datasource.manager';
-import { TenantContext } from '../kernel/tenant/tenant-context';
 
 import { TransactionContext } from './transaction-context';
 
@@ -15,25 +22,27 @@ function getTenantContext(instance: any, logger: Logger): TenantContext {
     hasTenantContext: !!instance.request?.tenantContext,
     headers: instance.request?.headers
       ? {
-          'x-business-unit': instance.request.headers['x-business-unit'],
-          'x-country-code': instance.request.headers['x-country-code'],
-          'business-unit': instance.request.headers['business-unit'],
-          'country-code': instance.request.headers['country-code'],
+          [TENANT_HEADER_BUSINESS_UNIT]:
+            instance.request.headers[TENANT_HEADER_BUSINESS_UNIT],
+          [TENANT_HEADER_COUNTRY_CODE]:
+            instance.request.headers[TENANT_HEADER_COUNTRY_CODE],
+          [TENANT_HEADER_BUSINESS_UNIT_ALT]:
+            instance.request.headers[TENANT_HEADER_BUSINESS_UNIT_ALT],
+          [TENANT_HEADER_COUNTRY_CODE_ALT]:
+            instance.request.headers[TENANT_HEADER_COUNTRY_CODE_ALT],
         }
       : 'No headers',
   });
 
-  // First, try to get from the tenantContext property set by middleware
   let tenantContext = instance.request?.tenantContext;
 
-  // If not found, try to extract directly from headers
   if (!tenantContext && instance.request?.headers) {
     const businessUnit =
-      instance.request.headers['x-business-unit'] ??
-      instance.request.headers['business-unit'];
+      instance.request.headers[TENANT_HEADER_BUSINESS_UNIT] ??
+      instance.request.headers[TENANT_HEADER_BUSINESS_UNIT_ALT];
     const countryCode =
-      instance.request.headers['x-country-code'] ??
-      instance.request.headers['country-code'];
+      instance.request.headers[TENANT_HEADER_COUNTRY_CODE] ??
+      instance.request.headers[TENANT_HEADER_COUNTRY_CODE_ALT];
 
     if (businessUnit && countryCode) {
       logger.debug('Extracting tenant context from headers directly');
@@ -53,7 +62,7 @@ function getTenantContext(instance: any, logger: Logger): TenantContext {
       headers: instance.request?.headers || 'No headers',
     });
     throw new Error(
-      'Missing tenant context for transactional operation. Ensure x-business-unit and x-country-code headers are provided.',
+      `Missing tenant context for transactional operation. Ensure ${TENANT_HEADER_BUSINESS_UNIT} and ${TENANT_HEADER_COUNTRY_CODE} headers are provided.`,
     );
   }
 

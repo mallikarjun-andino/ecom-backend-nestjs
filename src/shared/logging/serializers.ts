@@ -1,10 +1,17 @@
 import { stdSerializers } from 'pino';
 
+import {
+  TENANT_HEADER_BUSINESS_UNIT,
+  TENANT_HEADER_COUNTRY_CODE,
+  TENANT_PROPERTY_BUSINESS_UNIT,
+  TENANT_PROPERTY_COUNTRY_CODE,
+} from '@shared';
+
 /* eslint-disable */
 export function reqSerializer(req: any) {
   const tenantContext = {
-    businessUnit: req.headers['x-business-unit'],
-    countryCode: req.headers['x-country-code'],
+    [TENANT_PROPERTY_BUSINESS_UNIT]: req.headers[TENANT_HEADER_BUSINESS_UNIT],
+    [TENANT_PROPERTY_COUNTRY_CODE]: req.headers[TENANT_HEADER_COUNTRY_CODE],
   };
   return {
     id: req.id,

@@ -31,12 +31,25 @@ export class SampleSqsConsumer implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   async onModuleInit(): Promise<void> {
-    this.logger.log('Starting SQS listener for SampleEvent');
-    this.listener.subscribe(SampleEvent, async (msg, attrs) => {
-      this.logger.log(
-        `Received message: ${JSON.stringify(msg)} with attributes: ${JSON.stringify(attrs)}`,
-      );
-    });
+    this.listener.subscribe(
+      SampleEvent,
+      async (msg, attrs, raw, dataSource) => {
+        this.logger.debug(
+          `Received message: ${JSON.stringify(msg)} with attributes: ${JSON.stringify(attrs)}`,
+        );
+
+        if (dataSource) {
+          const queryRunner = dataSource.createQueryRunner();
+          queryRunner
+            .query(`SELECT * FROM messages WHERE id = $1`, [msg.id])
+            .then((result) => {
+              this.logger.log(
+                `Queried message from DB: ${JSON.stringify(result)}`,
+              );
+            });
+        }
+      },
+    );
     await this.listener.start();
   }
 

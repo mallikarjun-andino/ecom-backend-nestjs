@@ -1,6 +1,8 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+import { DatasourceManager } from '../database/datasource.manager';
+
 import { SqsClientProvider } from './sqs.client';
 import { SqsListenerFactory, SqsListenerOptions } from './sqs.listener';
 
@@ -9,6 +11,7 @@ const SqsListenerFactoryProvider = {
   useFactory: (
     clientProvider: SqsClientProvider,
     config: ConfigService,
+    datasourceManager: DatasourceManager,
   ): SqsListenerFactory => {
     const defaults: SqsListenerOptions = {
       waitTimeSeconds: config.get<number>('aws.sqs.defaultWaitTimeSeconds', 20),
@@ -25,9 +28,9 @@ const SqsListenerFactoryProvider = {
       onInvalid: 'dlq',
     };
     const client = clientProvider.getClient();
-    return new SqsListenerFactory(client, defaults);
+    return new SqsListenerFactory(client, defaults, datasourceManager);
   },
-  inject: [SqsClientProvider, ConfigService],
+  inject: [SqsClientProvider, ConfigService, DatasourceManager],
 };
 
 @Global()

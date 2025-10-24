@@ -10,6 +10,14 @@ import {
   trace,
 } from '@opentelemetry/api';
 
+import { TenantContextStorage } from '../kernel/tenant/tenant-context.storage';
+import {
+  TENANT_HEADER_BUSINESS_UNIT,
+  TENANT_HEADER_COUNTRY_CODE,
+  TENANT_PROPERTY_BUSINESS_UNIT,
+  TENANT_PROPERTY_COUNTRY_CODE,
+} from '../kernel/tenant/tenant.constants';
+
 export type SnsMessageAttributes = Record<string, string>;
 
 export interface ISnsPublisher {
@@ -60,6 +68,17 @@ function getTraceAttributes(): Record<string, string> {
   } as Record<string, string>;
 }
 
+function getTenantAttributes(): Record<string, string> {
+  const tenantContext = TenantContextStorage.get();
+  if (!tenantContext) {
+    return {} as Record<string, string>;
+  }
+  return {
+    [TENANT_HEADER_BUSINESS_UNIT]: tenantContext[TENANT_PROPERTY_BUSINESS_UNIT],
+    [TENANT_HEADER_COUNTRY_CODE]: tenantContext[TENANT_PROPERTY_COUNTRY_CODE],
+  } as Record<string, string>;
+}
+
 export class SnsPublisher implements ISnsPublisher {
   private readonly topic: string;
   private static nameToArnCache = new Map<string, string>();
@@ -101,7 +120,12 @@ export class SnsPublisher implements ISnsPublisher {
       try {
         const TopicArn = await this.resolveTopicArn();
         const traceAttributes = getTraceAttributes();
-        const mergedAttrs = { ...traceAttributes, ...(attributes ?? {}) };
+        const tenantAttributes = getTenantAttributes();
+        const mergedAttrs = {
+          ...traceAttributes,
+          ...tenantAttributes,
+          ...(attributes ?? {}),
+        };
         const MessageAttributes = toMessageAttributes(mergedAttrs);
         const Message = JSON.stringify(payload);
         await this.client.send(

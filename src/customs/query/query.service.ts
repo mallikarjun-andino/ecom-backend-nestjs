@@ -1,8 +1,7 @@
 import { Inject, Injectable, Logger, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { FastifyRequest } from 'fastify';
 
-import { ISnsPublisher, SnsPublisherClient } from '@shared';
+import { ISnsPublisher, SnsPublisherClient, TenantRequest } from '@shared';
 import { DatasourceManager } from '@shared/database/datasource.manager';
 import { TransactionContext } from '@shared/transaction/transaction-context';
 import { Transactional } from '@shared/transaction/transactional-method.decorator';
@@ -16,7 +15,7 @@ export class QueryService extends TransactionContext {
   // mandatory to inject request to have request scope and
   // data source manager for annotation to work
   constructor(
-    @Inject(REQUEST) private readonly request: FastifyRequest,
+    @Inject(REQUEST) private readonly request: TenantRequest,
     private readonly datasourceManager: DatasourceManager,
     @SnsPublisherClient('test-custom-events')
     private readonly customsPublisher: ISnsPublisher,

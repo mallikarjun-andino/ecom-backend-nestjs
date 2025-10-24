@@ -14,6 +14,15 @@ import {
 } from '@opentelemetry/api';
 import { plainToInstance } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
+import { DataSource } from 'typeorm';
+
+import { DatasourceManager } from '../database/datasource.manager';
+import {
+  TENANT_HEADER_BUSINESS_UNIT,
+  TENANT_HEADER_BUSINESS_UNIT_ALT,
+  TENANT_HEADER_COUNTRY_CODE,
+  TENANT_HEADER_COUNTRY_CODE_ALT,
+} from '../kernel/tenant/tenant.constants';
 
 export type SqsMessageAttributes = Record<string, string>;
 export type ClassType<T> = { new (...args: any[]): T };
@@ -25,6 +34,7 @@ export interface ISqsListener {
       body: T,
       attrs: SqsMessageAttributes,
       raw: SqsMessage,
+      dataSource?: DataSource,
     ) => Promise<void>,
   ): void;
   start(): Promise<void>;
@@ -65,8 +75,8 @@ function toAttrRecord(
 }
 
 const getter = {
-  keys: (carrier: Record<string, string>) => Object.keys(carrier),
-  get: (carrier: Record<string, string>, key: string) => carrier[key],
+  keys: (carrier: Record<string, string>): string[] => Object.keys(carrier),
+  get: (carrier: Record<string, string>, key: string): string => carrier[key],
 };
 
 class InvalidMessageError extends Error {
@@ -90,6 +100,36 @@ function formatValidationErrors(errors: ValidationError[]): string {
   return errors.flatMap((e) => recurse(e, [])).join('; ');
 }
 
+async function getDataSource(
+  datasourceManager: DatasourceManager | undefined,
+  attrs: SqsMessageAttributes,
+  logger: Logger,
+): Promise<DataSource | undefined> {
+  if (datasourceManager) {
+    const businessUnit =
+      attrs[TENANT_HEADER_BUSINESS_UNIT] ??
+      attrs[TENANT_HEADER_BUSINESS_UNIT_ALT];
+    const countryCode =
+      attrs[TENANT_HEADER_COUNTRY_CODE] ??
+      attrs[TENANT_HEADER_COUNTRY_CODE_ALT];
+
+    if (businessUnit && countryCode) {
+      try {
+        return await datasourceManager.getDataSource(businessUnit, countryCode);
+      } catch (err) {
+        logger.error(
+          `Failed to get DataSource for businessUnit=${businessUnit}, countryCode=${countryCode}`,
+          (err as Error).stack,
+        );
+        throw err;
+      }
+    }
+    logger.warn(
+      `Missing tenant context in message attributes (${TENANT_HEADER_BUSINESS_UNIT}, ${TENANT_HEADER_COUNTRY_CODE})`,
+    );
+  }
+}
+
 export class SqsListener implements ISqsListener {
   private readonly logger = new Logger(SqsListener.name);
   private readonly queue: string;
@@ -98,6 +138,7 @@ export class SqsListener implements ISqsListener {
     body: any,
     attrs: SqsMessageAttributes,
     raw: SqsMessage,
+    dataSource?: DataSource,
   ) => Promise<void>;
   private type?: ClassType<any>;
   private running = false;
@@ -107,6 +148,7 @@ export class SqsListener implements ISqsListener {
     private readonly client: SQSClient,
     queueUrlOrName: string,
     private readonly options: SqsListenerOptions,
+    private readonly datasourceManager?: DatasourceManager,
   ) {
     this.queue = queueUrlOrName;
   }
@@ -117,6 +159,7 @@ export class SqsListener implements ISqsListener {
       body: T,
       attrs: SqsMessageAttributes,
       raw: SqsMessage,
+      dataSource?: DataSource,
     ) => Promise<void>,
   ): void {
     this.type = type;
@@ -189,12 +232,11 @@ export class SqsListener implements ISqsListener {
     let ctx = otContext.active();
 
     if (attrs.traceparent) {
-      ctx = propagation.extract(ctx, attrs, getter as any);
+      ctx = propagation.extract(ctx, attrs, getter);
     }
 
     const span = tracer.startSpan('sqs.consume', undefined, ctx);
     try {
-      // Parse body
       const body: any = m.Body ? JSON.parse(m.Body) : undefined;
 
       const typed = this.type
@@ -214,11 +256,18 @@ export class SqsListener implements ISqsListener {
         }
       }
 
+      const dataSource: DataSource | undefined = await getDataSource(
+        this.datasourceManager,
+        attrs,
+        this.logger,
+      );
       await otContext.with(trace.setSpan(ctx, span), async () => {
-        await this.handler?.(typed, attrs, m);
+        this.logger.log(`Receiving SQS message ${m.MessageId}`);
+        await this.handler?.(typed, attrs, m, dataSource);
       });
 
       if (m.ReceiptHandle && this.queueUrl) {
+        this.logger.log(`Acknowledging SQS message ${m.MessageId}`);
         await this.client.send(
           new DeleteMessageCommand({
             QueueUrl: this.queueUrl,
@@ -248,7 +297,9 @@ export class SqsListener implements ISqsListener {
             ReceiptHandle: m.ReceiptHandle,
           }),
         );
-        this.logger.warn('Dropped invalid SQS message');
+        this.logger.warn(
+          `Dropped invalid SQS message ${JSON.stringify(m.Body)}`,
+        );
       }
     } finally {
       span.end();
@@ -260,9 +311,15 @@ export class SqsListenerFactory {
   constructor(
     private readonly client: SQSClient,
     private readonly defaults: SqsListenerOptions,
+    private readonly datasourceManager?: DatasourceManager,
   ) {}
   forQueue(queueUrlOrName: string, options?: SqsListenerOptions): ISqsListener {
     const opts: SqsListenerOptions = { ...this.defaults, ...(options ?? {}) };
-    return new SqsListener(this.client, queueUrlOrName, opts);
+    return new SqsListener(
+      this.client,
+      queueUrlOrName,
+      opts,
+      this.datasourceManager,
+    );
   }
 }

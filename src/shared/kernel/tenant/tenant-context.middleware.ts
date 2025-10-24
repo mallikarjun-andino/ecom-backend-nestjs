@@ -1,11 +1,15 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyReply } from 'fastify';
 
-import { TenantContext } from './tenant-context';
-
-interface TenantRequest extends FastifyRequest {
-  tenantContext?: TenantContext;
-}
+import {
+  TenantContext,
+  TenantContextStorage,
+  TenantRequest,
+  TENANT_HEADER_BUSINESS_UNIT,
+  TENANT_HEADER_BUSINESS_UNIT_ALT,
+  TENANT_HEADER_COUNTRY_CODE,
+  TENANT_HEADER_COUNTRY_CODE_ALT,
+} from '@shared';
 
 @Injectable()
 export class TenantContextMiddleware implements NestMiddleware {
@@ -13,9 +17,11 @@ export class TenantContextMiddleware implements NestMiddleware {
 
   use(req: TenantRequest, res: FastifyReply, next: () => void): void {
     const businessUnit =
-      req.headers['x-business-unit'] ?? req.headers['business-unit'];
+      req.headers[TENANT_HEADER_BUSINESS_UNIT] ??
+      req.headers[TENANT_HEADER_BUSINESS_UNIT_ALT];
     const countryCode =
-      req.headers['x-country-code'] ?? req.headers['country-code'];
+      req.headers[TENANT_HEADER_COUNTRY_CODE] ??
+      req.headers[TENANT_HEADER_COUNTRY_CODE_ALT];
 
     this.logger.debug('Setting tenant context', {
       businessUnit,
@@ -25,19 +31,23 @@ export class TenantContextMiddleware implements NestMiddleware {
     });
 
     if (businessUnit && countryCode) {
-      req.tenantContext = {
+      const tenantContext = {
         businessUnit,
         countryCode,
       } as TenantContext;
+      req.tenantContext = tenantContext;
+
       this.logger.debug('Tenant context set successfully');
+      // Run the rest of the middleware chain within tenant context
+      // AsyncLocalStorage maintains context for all async operations initiated here
+      TenantContextStorage.run(tenantContext, next);
     } else {
       this.logger.warn('Missing required tenant headers', {
         businessUnit,
         countryCode,
         availableHeaders: Object.keys(req.headers),
       });
+      next();
     }
-
-    next();
   }
 }
