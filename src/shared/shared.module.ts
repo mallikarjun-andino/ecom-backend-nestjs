@@ -2,7 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 
-import { loadEnvConfig } from '../config/config.loader';
+import { loadEnvConfig } from '@shared';
 
 import { TENANT_CONFIG_PROVIDER } from './database/interfaces/tenant-config-provider';
 import { EnvTenantConfigProvider } from './database/providers/env-tenant-config.provider';
