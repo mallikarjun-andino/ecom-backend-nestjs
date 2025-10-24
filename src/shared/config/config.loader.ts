@@ -5,7 +5,10 @@ import { join } from 'path';
 export function loadEnvConfig(configName: string): any {
   const environment = process.env.NODE_ENV ?? 'local';
   const envConfigPath = join(
-    __dirname,
+    // root path
+    process.cwd(),
+    'src',
+    'config',
     'environments',
     environment,
     `${configName}.config`,
@@ -26,7 +29,7 @@ export function loadEnvConfig(configName: string): any {
 
   // Fall back to base config
   try {
-    const baseConfig = require(join(__dirname, `${configName}.config`));
+    const baseConfig = require(join(process.cwd(), 'src', 'config', `${configName}.config`));
     console.log(
       `✅ Loaded: src/config/${configName}.config.ts (no environment override)`,
     );
