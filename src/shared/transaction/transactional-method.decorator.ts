@@ -1,16 +1,31 @@
 import { Logger } from '@nestjs/common';
 
+import { DatasourceManager } from '../database/datasource.manager';
+import { TenantContext } from '../kernel/tenant/tenant-context';
 import {
-  TenantContext,
   TENANT_HEADER_BUSINESS_UNIT,
   TENANT_HEADER_BUSINESS_UNIT_ALT,
   TENANT_HEADER_COUNTRY_CODE,
   TENANT_HEADER_COUNTRY_CODE_ALT,
-} from '@shared';
-
-import { DatasourceManager } from '../database/datasource.manager';
+} from '../kernel/tenant/tenant.constants';
 
 import { TransactionContext } from './transaction-context';
+
+export enum Propagation {
+  REQUIRED = 'REQUIRED',
+  REQUIRES_NEW = 'REQUIRES_NEW',
+}
+
+export enum IsolationLevel {
+  READ_COMMITTED = 'READ COMMITTED',
+  REPEATABLE_READ = 'REPEATABLE READ',
+  SERIALIZABLE = 'SERIALIZABLE',
+}
+
+export interface TransactionalOptions {
+  propagation?: Propagation;
+  isolationLevel?: IsolationLevel;
+}
 
 /* eslint-disable */
 function getTenantContext(instance: any, logger: Logger): TenantContext {
@@ -83,25 +98,26 @@ function getDatasourceManager(
   return datasourceManager;
 }
 
-function injectEntityManagerIfNeeded(
-  target: any,
-  propertyKey: string,
-  args: any[],
-  entityManager: any,
-) {
-  const paramTypes =
-    Reflect.getMetadata('design:paramtypes', target, propertyKey) || [];
-  const entityManagerIndex = paramTypes.findIndex(
-    (t: any) => t && t.name === 'EntityManager',
-  );
-  if (entityManagerIndex !== -1) {
-    args[entityManagerIndex] = entityManager;
-  }
-}
+// function injectEntityManagerIfNeeded(
+//   target: any,
+//   propertyKey: string,
+//   args: any[],
+//   entityManager: any,
+// ) {
+//   const paramTypes =
+//     Reflect.getMetadata('design:paramtypes', target, propertyKey) || [];
+//   const entityManagerIndex = paramTypes.findIndex(
+//     (t: any) => t && t.name === 'EntityManager',
+//   );
+//   if (entityManagerIndex !== -1) {
+//     args[entityManagerIndex] = entityManager;
+//   }
+// }
 
 async function setupQueryRunner(
   datasourceManager: DatasourceManager,
   tenantContext: TenantContext,
+  isolationLevel?: IsolationLevel,
 ) {
   const dataSource = await datasourceManager.getDataSource(
     tenantContext.businessUnit,
@@ -110,7 +126,9 @@ async function setupQueryRunner(
   const queryRunner = dataSource.createQueryRunner();
   await queryRunner.connect();
   await queryRunner.query(`SET search_path TO ${tenantContext.countryCode}`);
-  await queryRunner.startTransaction();
+  await queryRunner.startTransaction(
+    isolationLevel ?? IsolationLevel.READ_COMMITTED,
+  );
   return queryRunner;
 }
 
@@ -120,19 +138,19 @@ async function executeInTransaction(
   originalMethod: Function,
   instance: any,
   args: any[],
-  target: any,
-  propertyKey: string,
 ) {
   try {
-    injectEntityManagerIfNeeded(target, propertyKey, args, queryRunner.manager);
+    let transactionId: string | undefined;
     const result = await TransactionContext.run(
       queryRunner.manager,
       async () => {
+        transactionId = TransactionContext.getTransactionId();
+        logger.debug(`Transaction started with id ${transactionId}`);
         return await originalMethod.apply(instance, args);
       },
     );
     await queryRunner.commitTransaction();
-    logger.debug('Transaction committed successfully');
+    logger.debug(`Transaction committed successfully ${transactionId}`);
     return result;
   } catch (err) {
     await queryRunner.rollbackTransaction();
@@ -144,10 +162,13 @@ async function executeInTransaction(
   }
 }
 
-export function Transactional() {
+export function Transactional(options?: TransactionalOptions) {
+  const propagation = options?.propagation ?? Propagation.REQUIRED;
+  const isolationLevel = options?.isolationLevel;
+
   return function (
-    target: any,
-    propertyKey: string,
+    _target: any,
+    _propertyKey: string,
     descriptor: PropertyDescriptor,
   ) {
     const logger = new Logger('TransactionalAnnotation');
@@ -158,19 +179,44 @@ export function Transactional() {
     descriptor.value = async function (...args: any[]) {
       const tenantContext = getTenantContext(this, logger);
       const datasourceManager = getDatasourceManager(this, logger);
-      const queryRunner = await setupQueryRunner(
-        datasourceManager,
-        tenantContext,
-      );
-      return executeInTransaction(
-        logger,
-        queryRunner,
-        originalMethod,
-        this,
-        args,
-        target,
-        propertyKey,
-      );
+
+      switch (propagation) {
+        case Propagation.REQUIRES_NEW:
+          logger.debug('Creating new transaction (REQUIRES_NEW)');
+          const newQueryRunner = await setupQueryRunner(
+            datasourceManager,
+            tenantContext,
+            isolationLevel,
+          );
+          return executeInTransaction(
+            logger,
+            newQueryRunner,
+            originalMethod,
+            this,
+            args,
+          );
+
+        case Propagation.REQUIRED:
+        default:
+          const existingEntityManager = TransactionContext.getEntityManager();
+          if (existingEntityManager) {
+            logger.debug('Using existing transaction (REQUIRED)');
+            return await originalMethod.apply(this, args);
+          }
+          logger.debug('Creating new transaction (REQUIRED)');
+          const queryRunner = await setupQueryRunner(
+            datasourceManager,
+            tenantContext,
+            isolationLevel,
+          );
+          return executeInTransaction(
+            logger,
+            queryRunner,
+            originalMethod,
+            this,
+            args,
+          );
+      }
     };
   };
 }

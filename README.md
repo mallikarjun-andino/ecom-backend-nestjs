@@ -14,6 +14,7 @@ management, safe migrations, advanced logging, and operational endpoints for clo
 - **Transactional Operations:**
     - Declarative transactional decorators and interceptors for automatic transaction management.
     - Ensures data consistency and rollback on errors across tenant boundaries.
+    - See [Transactions](docs/transaction.md) for details and instructions on how to run with transaction.
 
 - **Operational Endpoints (Actuator):**
     - Health, readiness, liveness, metrics, and info endpoints for monitoring and orchestration.
@@ -48,7 +49,8 @@ management, safe migrations, advanced logging, and operational endpoints for clo
 - **Open Telemetry Support:**
     - Basic OpenTelemetry setup for distributed tracing and metrics collection.
     - Trace context propagation for downstream requests.
-    - See [OpenTelemetry Integration Guide](./docs/opentelemetry.md) for details and instructions on how to run with OpenTelemetry.
+    - See [OpenTelemetry Integration Guide](./docs/opentelemetry.md) for details and instructions on how to run with
+      OpenTelemetry.
 
 - **Code Quality:**
     - ESLint and Prettier configurations for a consistent code style.

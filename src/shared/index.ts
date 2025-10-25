@@ -6,6 +6,8 @@ export * from './kernel/tenant/tenant.constants';
 
 // export transactional decorator and interceptor
 export * from './kernel/interceptor/request.interceptor';
+export * from './transaction/transactional-method.decorator';
+export * from './transaction/transaction-context';
 
 export * from './http/circuit.http';
 export * from './sns';
