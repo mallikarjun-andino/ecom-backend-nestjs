@@ -17,8 +17,7 @@ src/config/
 │       ├── database.config.ts    # Production database settings
 │       └── logging.config.ts     # Production logging config
 ├── database.config.ts            # Base database configuration
-├── logging.config.ts             # Base logging configuration
-└── config.loader.ts              # Configuration loader utility
+└── logging.config.ts             # Base logging configuration
 ```
 
 ## Configuration Precedence (Highest to Lowest)
