@@ -21,7 +21,7 @@ export class RequestInterceptor implements NestInterceptor {
   /* eslint-disable */
   private logIncomingRequest(request: any): void {
     const method = request.method;
-    const path = request.originalUrl || request.url;
+    const path = request.originalUrl ?? request.url;
     const queryString =
       Object.keys(request.query).length > 0
         ? `?${new URLSearchParams(request.query as any).toString()}`

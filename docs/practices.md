@@ -26,14 +26,14 @@ This document outlines the architectural patterns and best practices implemented
 import { registerAs } from '@nestjs/config';
 
 export default registerAs('database', () => ({
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432', 10),
+  host: process.env.DB_HOST ?? 'localhost',
+  port: parseInt(process.env.DB_PORT ?? '5432', 10),
 }));
 
 // Environment override: src/config/environments/production/database.config.ts
 export default registerAs('database', () => ({
-  host: process.env.DB_HOST || 'prod-db.company.com',
-  port: parseInt(process.env.DB_PORT || '5432', 10),
+  host: process.env.DB_HOST ?? 'prod-db.company.com',
+  port: parseInt(process.env.DB_PORT ?? '5432', 10),
   ssl: true,
   maxConnections: 50,
 }));
@@ -361,7 +361,7 @@ if (result.isSuccess()) {
 **Pattern**: Centralized error handling with custom exception filters.
 
 **Implementation**:
-```typescript path=/Users/ganesanarunachalam/Andino/Code/serhafan/catalyst-nest/src/shared/filters/customExceptionFilter.ts start=10
+```typescript path=/Users/ganesanarunachalam/Andino/Code/serhafan/catalyst-nest/src/shared/filters/custom.exception.filter.ts start=10
 export class CustomExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(CustomExceptionFilter.name);
   

@@ -44,9 +44,9 @@ Create a base configuration file:
 import { registerAs } from '@nestjs/config';
 
 export default registerAs('app', () => ({
-  name: process.env.APP_NAME || 'catalyst-nestjs',
-  port: parseInt(process.env.PORT || '3000', 10),
-  timeout: parseInt(process.env.APP_TIMEOUT || '30000', 10),
+  name: process.env.APP_NAME ?? 'catalyst-nestjs',
+  port: parseInt(process.env.PORT ?? '3000', 10),
+  timeout: parseInt(process.env.APP_TIMEOUT ?? '30000', 10),
 }));
 ```
 
@@ -73,9 +73,9 @@ Create environment-specific configs to override defaults:
 import { registerAs } from '@nestjs/config';
 
 export default registerAs('app', () => ({
-  name: process.env.APP_NAME || 'catalyst-nestjs-prod',
-  port: parseInt(process.env.PORT || '8080', 10),      // Different port for prod
-  timeout: parseInt(process.env.APP_TIMEOUT || '60000', 10), // Longer timeout
+  name: process.env.APP_NAME ?? 'catalyst-nestjs-prod',
+  port: parseInt(process.env.PORT ?? '8080', 10),      // Different port for prod
+  timeout: parseInt(process.env.APP_TIMEOUT ?? '60000', 10), // Longer timeout
   enableMetrics: true,  // Production-only feature
 }));
 ```
@@ -138,24 +138,24 @@ export class MyService {
 
 ```typescript
 // Base config (src/config/database.config.ts) - for development
-host: process.env.DB_HOST || 'localhost'
+host: process.env.DB_HOST ?? 'localhost'
 
 // Staging override (src/config/environments/staging/database.config.ts)
-host: process.env.DB_HOST || 'staging-db.company.com'
+host: process.env.DB_HOST ?? 'staging-db.company.com'
 
 // Production override (src/config/environments/production/database.config.ts)
-host: process.env.DB_HOST || 'prod-db.company.com'
+host: process.env.DB_HOST ?? 'prod-db.company.com'
 ```
 
 ### Example 2: Different Log Levels per Environment
 
 ```typescript
 // Base config - debug level for development
-level: process.env.LOG_LEVEL || 'debug'
+level: process.env.LOG_LEVEL ?? 'debug'
 
 // Production override - warn level, structured logging
-level: process.env.LOG_LEVEL || 'warn'
-format: process.env.LOG_FORMAT || 'json'
+level: process.env.LOG_LEVEL ?? 'warn'
+format: process.env.LOG_FORMAT ?? 'json'
 ```
 
 ### Example 3: Secrets vs Configuration Files
@@ -173,11 +173,11 @@ JWT_SECRET=jwt-secret
 
 ```typescript
 // src/config/environments/production/database.config.ts
-host: process.env.DB_HOST || 'prod-database-cluster.company.com',
-port: parseInt(process.env.DB_PORT || '5432', 10),
+host: process.env.DB_HOST ?? 'prod-database-cluster.company.com',
+port: parseInt(process.env.DB_PORT ?? '5432', 10),
 maxConnections: 50,
 ssl:true, 
 ```
 
 The system automatically loads the right configuration based on your `NODE_ENV`, with environment variables always
-taking highest precedence for deployment flexibility.
+taking the highest precedence for deployment flexibility.

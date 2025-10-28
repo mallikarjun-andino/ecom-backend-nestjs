@@ -25,7 +25,10 @@ export class MigrationService {
 
   private async runMigrationsOnDatabase(dataSource: DataSource): Promise<void> {
     const options = dataSource.options as PostgresConnectionOptions;
-    const lockKey = this.generateLockKey(options.database!, options.schema);
+    const lockKey = this.generateLockKey(
+      options.database ?? '',
+      options.schema,
+    );
     try {
       if (!dataSource.isInitialized) {
         await dataSource.initialize();
@@ -73,7 +76,7 @@ export class MigrationService {
     dataSource: DataSource,
     options: PostgresConnectionOptions,
   ): void {
-    const pendingMigrations = dataSource.migrations?.map((m) => m.name) || [];
+    const pendingMigrations = dataSource.migrations?.map((m) => m.name) ?? [];
     this.logger.info({
       msg: `Pending migrations for database: ${options.database} (schema: ${options.schema})`,
       migrations: pendingMigrations,
@@ -81,10 +84,12 @@ export class MigrationService {
   }
 
   private logAppliedMigrations(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     migrationResult: any[],
     options: PostgresConnectionOptions,
   ): void {
-    const appliedMigrations = migrationResult?.map((m) => m.name) || [];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+    const appliedMigrations = migrationResult?.map((m) => m.name) ?? [];
     this.logger.info({
       msg: `Applied migrations for database: ${options.database} (schema: ${options.schema})`,
       migrations: appliedMigrations,
@@ -96,9 +101,11 @@ export class MigrationService {
     lockKey: number,
     options: PostgresConnectionOptions,
   ): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const lockAcquired = await dataSource.query(
       `SELECT pg_try_advisory_lock(${lockKey}) as locked`,
     );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (!lockAcquired[0]?.locked) {
       this.logger.warn(
         `Could not acquire advisory lock for database: ${options.database} (schema: ${options.schema}), skipping migration.`,

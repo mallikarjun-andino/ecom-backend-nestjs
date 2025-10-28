@@ -6,7 +6,7 @@ import { loadEnvConfig } from '@shared';
 
 import { TENANT_CONFIG_PROVIDER } from './database/interfaces/tenant-config-provider';
 import { EnvTenantConfigProvider } from './database/providers/env-tenant-config.provider';
-import { CustomExceptionFilter } from './filters/customExceptionFilter';
+import { CustomExceptionFilter } from './filters/custom.exception.filter';
 import { SnsModule } from './sns';
 
 @Global()

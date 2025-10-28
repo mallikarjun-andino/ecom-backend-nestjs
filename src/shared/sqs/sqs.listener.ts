@@ -25,6 +25,7 @@ import {
 } from '../kernel/tenant/tenant.constants';
 
 export type SqsMessageAttributes = Record<string, string>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ClassType<T> = { new (...args: any[]): T };
 
 export interface ISqsListener {
@@ -65,7 +66,8 @@ function toAttrRecord(
     const s =
       v?.StringValue ??
       (v?.BinaryValue
-        ? Buffer.from(v.BinaryValue as any).toString('utf8')
+        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          Buffer.from(v.BinaryValue as any).toString('utf8')
         : undefined);
     if (s !== undefined) {
       out[k] = String(s);
@@ -135,11 +137,13 @@ export class SqsListener implements ISqsListener {
   private readonly queue: string;
   private queueUrl?: string;
   private handler?: (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body: any,
     attrs: SqsMessageAttributes,
     raw: SqsMessage,
     dataSource?: DataSource,
   ) => Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private type?: ClassType<any>;
   private running = false;
   private pollers: Promise<void>[] = [];
@@ -237,8 +241,10 @@ export class SqsListener implements ISqsListener {
 
     const span = tracer.startSpan('sqs.consume', undefined, ctx);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
       const body: any = m.Body ? JSON.parse(m.Body) : undefined;
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const typed = this.type
         ? plainToInstance(this.type, body, { enableImplicitConversion: true })
         : body;

@@ -87,19 +87,19 @@ curl -X GET http://localhost:3000/api/customs \
 export default registerAs('database', () => ({
   databases: {
     'serhafen-us': {
-      host: process.env.DB_HOST_SERHAFEN_US || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432', 10),
-      username: process.env.DB_USERNAME || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
-      database: process.env.DB_DATABASE || 'serhafen_us',
+      host: process.env.DB_HOST_SERHAFEN_US ?? 'localhost',
+      port: parseInt(process.env.DB_PORT ?? '5432', 10),
+      username: process.env.DB_USERNAME ?? 'postgres',
+      password: process.env.DB_PASSWORD ?? 'postgres',
+      database: process.env.DB_DATABASE ?? 'serhafen_us',
       schema: 'us', // Country-specific schema
     },
     'serhafen-de': {
-      host: process.env.DB_HOST_SERHAFEN_DE || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432', 10),
-      username: process.env.DB_USERNAME || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
-      database: process.env.DB_DATABASE || 'serhafen_de',
+      host: process.env.DB_HOST_SERHAFEN_DE ?? 'localhost',
+      port: parseInt(process.env.DB_PORT ?? '5432', 10),
+      username: process.env.DB_USERNAME ?? 'postgres',
+      password: process.env.DB_PASSWORD ?? 'postgres',
+      database: process.env.DB_DATABASE ?? 'serhafen_de',
       schema: 'de',
     },
   },
