@@ -12,7 +12,8 @@
     "baseUrl": "./",
     "paths": {
       "@shared": ["src/shared/index"],
-      "@shared/*": ["src/shared/*"]
+      "@shared/*": ["src/shared/*"],
+      "@generated/*": ["generated/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
