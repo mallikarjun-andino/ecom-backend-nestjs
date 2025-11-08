@@ -4,6 +4,7 @@ import {
   QueueListener,
   SQSMessageAttributes,
 } from '@snow-tzu/nest-sqs-listener';
+import { QueryRunner } from 'typeorm';
 
 import {
   TENANT_HEADER_BUSINESS_UNIT,
@@ -14,7 +15,6 @@ import {
 import { DatasourceManager } from '@shared/database/datasource.manager';
 
 import { SampleEvent } from './sample.event';
-import { QueryRunner } from 'typeorm';
 
 @Injectable()
 export class SampleSqsConsumer implements QueueListener<SampleEvent> {

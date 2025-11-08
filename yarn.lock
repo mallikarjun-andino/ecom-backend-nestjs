@@ -3416,10 +3416,10 @@
   dependencies:
     tslib "^2.6.2"
 
-"@snow-tzu/nest-openapi-code-generator@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@snow-tzu/nest-openapi-code-generator/-/nest-openapi-code-generator-0.0.5.tgz#43d722132bfb57f3fd317aacba122d9160d3008f"
-  integrity sha512-sXA5ISMzmSBp/sAV3sE5r9+xa1vQfPcWUQBktAUX7w8gR2mPSuN+7uuAl4tb2r1hfKJJVrfjtYQwws+hjqQISA==
+"@snow-tzu/nest-openapi-code-generator@^0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@snow-tzu/nest-openapi-code-generator/-/nest-openapi-code-generator-0.0.11.tgz#d52d3d33597bd66484c39ea5a4c332cf0d6aa2e4"
+  integrity sha512-2NAS1/H+7pOrHHHciJ9FJvMv+E6xB5Kd9+W5mQZPe1pVJpiIc/XZZVpebJqtMuUUsrwCZPrSUPPlzWBbmaZvsQ==
   dependencies:
     "@apidevtools/swagger-parser" "^10.1.0"
     "@nestjs/swagger" "^7.0.0"
