@@ -12,6 +12,7 @@ import { SharedModule } from '@shared/shared.module';
 import { ActuatorModule } from './actuator/actuator.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AwsModule } from './aws.module';
 import { ContractFirstModule } from './contract-first/module';
 import { CustomsModule } from './customs/module';
 import { DemoModule } from './demo/demo.module';
@@ -32,6 +33,7 @@ import { SampleSqsListenerModule } from './examples/sqs-listener.module.sample';
     DemoModule,
     SampleSqsListenerModule,
     ContractFirstModule,
+    AwsModule,
   ],
   controllers: [AppController],
   providers: [
