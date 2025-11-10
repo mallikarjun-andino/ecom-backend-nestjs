@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   AcknowledgementMode,
   SqsMessageListenerContainer,
+  ValidationFailureMode,
 } from '@snow-tzu/nest-sqs-listener';
 
 import { COMMON_SQS_CLIENT } from '../constants/tokens';
@@ -31,13 +32,15 @@ import { SampleSqsConsumer } from './sqs-listener.sample';
 
         container.configure((options) => {
           options
-            .queueNames(
+            .queueName(
               configService.get(Constants.queueConfigPath) ?? 'dummy-queue',
             )
             .pollTimeout(20)
             .autoStartup(true)
             .acknowledgementMode(AcknowledgementMode.ON_SUCCESS)
             .maxConcurrentMessages(10)
+            .targetClass(SampleEvent)
+            .enableValidation(true)
             .maxMessagesPerPoll(10);
         });
         container.setMessageListener(listener);

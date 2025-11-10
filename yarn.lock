@@ -1705,16 +1705,6 @@
     webpack "5.97.1"
     webpack-node-externals "3.0.0"
 
-"@nestjs/common@^10.0.0":
-  version "10.4.20"
-  resolved "https://registry.yarnpkg.com/@nestjs/common/-/common-10.4.20.tgz#db021ccfcae398c1cd6c8bc808a169285978d687"
-  integrity sha512-hxJxZF7jcKGuUzM9EYbuES80Z/36piJbiqmPy86mk8qOn5gglFebBTvcx7PWVbRNSb4gngASYnefBj/Y2HAzpQ==
-  dependencies:
-    uid "2.0.2"
-    file-type "20.4.1"
-    iterare "1.2.1"
-    tslib "2.8.1"
-
 "@nestjs/common@^11.0.0":
   version "11.1.8"
   resolved "https://registry.yarnpkg.com/@nestjs/common/-/common-11.1.8.tgz#624d01f50d2f263592a1a5407d9f180179a98b2c"
@@ -1726,6 +1716,16 @@
     load-esm "1.0.3"
     tslib "2.8.1"
 
+"@nestjs/common@^9.0.0 || ^10.0.0":
+  version "10.4.20"
+  resolved "https://registry.yarnpkg.com/@nestjs/common/-/common-10.4.20.tgz#db021ccfcae398c1cd6c8bc808a169285978d687"
+  integrity sha512-hxJxZF7jcKGuUzM9EYbuES80Z/36piJbiqmPy86mk8qOn5gglFebBTvcx7PWVbRNSb4gngASYnefBj/Y2HAzpQ==
+  dependencies:
+    uid "2.0.2"
+    file-type "20.4.1"
+    iterare "1.2.1"
+    tslib "2.8.1"
+
 "@nestjs/config@^4.0.2":
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@nestjs/config/-/config-4.0.2.tgz#a2777a1fd2d0d594bab3953f50fbca95c14cce52"
@@ -1734,18 +1734,6 @@
     dotenv "16.4.7"
     dotenv-expand "12.0.1"
     lodash "4.17.21"
-
-"@nestjs/core@^10.0.0":
-  version "10.4.20"
-  resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-10.4.20.tgz#2740b91f60b5b3896e3bca5a189064e7bc15c2fc"
-  integrity sha512-kRdtyKA3+Tu70N3RQ4JgmO1E3LzAMs/eppj7SfjabC7TgqNWoS4RLhWl4BqmsNVmjj6D5jgfPVtHtgYkU3AfpQ==
-  dependencies:
-    uid "2.0.2"
-    "@nuxtjs/opencollective" "0.3.2"
-    fast-safe-stringify "2.1.1"
-    iterare "1.2.1"
-    path-to-regexp "3.3.0"
-    tslib "2.8.1"
 
 "@nestjs/core@^11.0.0":
   version "11.1.8"
@@ -1757,6 +1745,18 @@
     fast-safe-stringify "2.1.1"
     iterare "1.2.1"
     path-to-regexp "8.3.0"
+    tslib "2.8.1"
+
+"@nestjs/core@^9.0.0 || ^10.0.0":
+  version "10.4.20"
+  resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-10.4.20.tgz#2740b91f60b5b3896e3bca5a189064e7bc15c2fc"
+  integrity sha512-kRdtyKA3+Tu70N3RQ4JgmO1E3LzAMs/eppj7SfjabC7TgqNWoS4RLhWl4BqmsNVmjj6D5jgfPVtHtgYkU3AfpQ==
+  dependencies:
+    uid "2.0.2"
+    "@nuxtjs/opencollective" "0.3.2"
+    fast-safe-stringify "2.1.1"
+    iterare "1.2.1"
+    path-to-regexp "3.3.0"
     tslib "2.8.1"
 
 "@nestjs/mapped-types@2.0.5":
@@ -3431,14 +3431,14 @@
     fs-extra "^11.1.1"
     handlebars "^4.7.8"
 
-"@snow-tzu/nest-sqs-listener@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@snow-tzu/nest-sqs-listener/-/nest-sqs-listener-0.0.1.tgz#9b1eb28b8cecd49fccf05a55b7da57c554c44d0c"
-  integrity sha512-2P7WQ/9kxHc4/JNLrV7tTXN46r44tZKRJGLOlZnlytrGUs4ek2dBT062FQEhITDb/ngSZSTSa6HBQt1zvlK9sA==
+"@snow-tzu/nest-sqs-listener@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@snow-tzu/nest-sqs-listener/-/nest-sqs-listener-0.0.4.tgz#176b25c22f42788bbf1c8cee7e364ead8b149d41"
+  integrity sha512-dqr/UtFdXSMU0Im4GHzb1WNDarOSfqnaFqmwggReoieFYWVAG4QkriMbmLD5muVAt/MFZYeURUOUUbAL9cPRfA==
   dependencies:
     "@aws-sdk/client-sqs" "^3.0.0"
-    "@nestjs/common" "^10.0.0"
-    "@nestjs/core" "^10.0.0"
+    "@nestjs/common" "^9.0.0 || ^10.0.0"
+    "@nestjs/core" "^9.0.0 || ^10.0.0"
     class-transformer "^0.5.1"
     reflect-metadata "^0.1.13"
     rxjs "^7.8.0"
