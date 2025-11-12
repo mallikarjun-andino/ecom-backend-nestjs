@@ -1,4 +1,4 @@
-import { IsISO8601, IsOptional, IsString } from 'class-validator';
+import { IsISO8601, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class SampleEvent {
   @IsString()
@@ -10,4 +10,8 @@ export class SampleEvent {
 
   @IsISO8601()
   at!: string;
+
+  @IsOptional()
+  @IsNumber()
+  count?: number;
 }

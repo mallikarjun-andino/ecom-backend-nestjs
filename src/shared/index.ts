@@ -14,3 +14,4 @@ export * from './sns';
 export * from './sqs';
 
 export * from './config/config.loader';
+export * from './enrichers';

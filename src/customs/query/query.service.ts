@@ -1,15 +1,14 @@
 import { Inject, Injectable, Logger, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
+import { SnsMessagePublisher } from '@snow-tzu/aws-message-publisher';
 
-import {
-  ISnsPublisher,
-  Propagation,
-  SnsPublisherClient,
-  TenantRequest,
-} from '@shared';
+import { Propagation, TenantRequest } from '@shared';
 import { DatasourceManager } from '@shared/database/datasource.manager';
 import { TransactionContext } from '@shared/transaction/transaction-context';
 import { Transactional } from '@shared/transaction/transactional-method.decorator';
+
+import { CUSTOM_MESSAGE_PUBLISHER } from '../../constants/tokens';
+import { SampleEvent } from '../../events/sample.event';
 
 import { Message } from './message.entity';
 
@@ -22,8 +21,8 @@ export class QueryService extends TransactionContext {
   constructor(
     @Inject(REQUEST) private readonly request: TenantRequest,
     private readonly datasourceManager: DatasourceManager,
-    @SnsPublisherClient('test-custom-events')
-    private readonly customsPublisher: ISnsPublisher,
+    @Inject(CUSTOM_MESSAGE_PUBLISHER)
+    private readonly customsPublisher: SnsMessagePublisher<SampleEvent>,
   ) {
     super();
   }
@@ -37,8 +36,16 @@ export class QueryService extends TransactionContext {
         at: new Date().toISOString(),
         count: results.length,
       },
-      { domain: 'customs' },
+      {
+        messageAttributes: {
+          domain: {
+            dataType: 'String',
+            value: 'Customs',
+          },
+        },
+      },
     );
+    this.logger.log('published customs list fetched event');
     return results;
   }
 
@@ -65,9 +72,21 @@ export class QueryService extends TransactionContext {
     this.logger.log(`Find a custom of id ${id}`);
     const result = await this.findOneInTransaction(id);
     await this.customsPublisher.publish(
-      { type: 'CustomsFetched', id, at: new Date().toISOString() },
-      { domain: 'customs' },
+      {
+        type: 'CustomsFetched',
+        id: id.toString(),
+        at: new Date().toISOString(),
+      },
+      {
+        messageAttributes: {
+          domain: {
+            dataType: 'String',
+            value: 'Customs',
+          },
+        },
+      },
     );
+    this.logger.log(`published custom fetched event for id ${id}`);
     return result;
   }
   @Transactional()

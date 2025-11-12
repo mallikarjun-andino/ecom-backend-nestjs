@@ -14,7 +14,7 @@ import {
 } from '@shared';
 import { DatasourceManager } from '@shared/database/datasource.manager';
 
-import { SampleEvent } from './sample.event';
+import { SampleEvent } from '../events/sample.event';
 
 @Injectable()
 export class SampleSqsConsumer implements QueueListener<SampleEvent> {

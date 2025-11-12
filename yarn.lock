@@ -3416,6 +3416,11 @@
   dependencies:
     tslib "^2.6.2"
 
+"@snow-tzu/aws-message-publisher@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@snow-tzu/aws-message-publisher/-/aws-message-publisher-0.0.3.tgz#ca91a3cf835b880094c872ffaadd51091ee0cad0"
+  integrity sha512-TDHSYHstZLcTMwF4fG9s9sGRz0yUY8E+AFYQ8eO8usn+o8IjBVCIlNLcv4vwTNdVz56MuI4PeSX+7Z3Bzji+Ow==
+
 "@snow-tzu/nest-openapi-code-generator@^0.0.11":
   version "0.0.11"
   resolved "https://registry.yarnpkg.com/@snow-tzu/nest-openapi-code-generator/-/nest-openapi-code-generator-0.0.11.tgz#d52d3d33597bd66484c39ea5a4c332cf0d6aa2e4"

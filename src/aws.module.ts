@@ -1,9 +1,10 @@
+import { SNSClient } from '@aws-sdk/client-sns';
 import { SQSClient } from '@aws-sdk/client-sqs';
 import { Global, Module } from '@nestjs/common';
 
-import { SqsClientProvider } from '@shared';
+import { SnsClientProvider, SqsClientProvider } from '@shared';
 
-import { COMMON_SQS_CLIENT } from './constants/tokens';
+import { COMMON_SNS_CLIENT, COMMON_SQS_CLIENT } from './constants/tokens';
 
 @Global()
 @Module({
@@ -15,7 +16,14 @@ import { COMMON_SQS_CLIENT } from './constants/tokens';
         sqsClientProvider.getClient(),
       inject: [SqsClientProvider],
     },
+    SnsClientProvider,
+    {
+      provide: COMMON_SNS_CLIENT,
+      useFactory: (snsClientProvider: SnsClientProvider): SNSClient =>
+        snsClientProvider.getClient(),
+      inject: [SnsClientProvider],
+    },
   ],
-  exports: [COMMON_SQS_CLIENT],
+  exports: [COMMON_SQS_CLIENT, COMMON_SNS_CLIENT],
 })
 export class AwsModule {}

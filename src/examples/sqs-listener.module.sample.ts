@@ -4,13 +4,12 @@ import { ConfigService } from '@nestjs/config';
 import {
   AcknowledgementMode,
   SqsMessageListenerContainer,
-  ValidationFailureMode,
 } from '@snow-tzu/nest-sqs-listener';
 
 import { COMMON_SQS_CLIENT } from '../constants/tokens';
+import { SampleEvent } from '../events/sample.event';
 
 import { Constants, SAMPLE_CONTAINER } from './constants';
-import { SampleEvent } from './sample.event';
 import { SampleSqsConsumer } from './sqs-listener.sample';
 
 @Module({
