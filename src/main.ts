@@ -49,6 +49,18 @@ async function bootstrap(): Promise<void> {
   }
 
   await app.listen(port);
+
+  process.on('SIGINT', async () => {
+    logger.log('Received SIGINT, shutting down gracefully...');
+    await app.close();
+    process.exit(0);
+  });
+
+  process.on('SIGTERM', async () => {
+    logger.log('Received SIGTERM, shutting down gracefully...');
+    await app.close();
+    process.exit(0);
+  });
   logger.log(`Application is running on: http://localhost:${port}`);
 }
 
