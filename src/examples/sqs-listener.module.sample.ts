@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   AcknowledgementMode,
   SqsMessageListenerContainer,
+  ValidationFailureMode,
 } from '@snow-tzu/nest-sqs-listener';
 
 import { COMMON_SQS_CLIENT } from '../constants/tokens';
@@ -40,7 +41,10 @@ import { SampleSqsConsumer } from './sqs-listener.sample';
             .maxConcurrentMessages(10)
             .targetClass(SampleEvent)
             .enableValidation(true)
-            .maxMessagesPerPoll(10);
+            .validationFailureMode(ValidationFailureMode.ACKNOWLEDGE)
+            .maxMessagesPerPoll(10)
+            .enableBatchAcknowledgement(true)
+            .batchAcknowledgementOptions(5, 1000);
         });
         container.setMessageListener(listener);
 
