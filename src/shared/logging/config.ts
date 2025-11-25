@@ -1,22 +1,35 @@
-import { ConfigService } from '@nestjs/config';
 import { trace } from '@opentelemetry/api';
+import {
+  ConfigProperty,
+  ConfigurationProperties,
+  Required,
+} from '@snow-tzu/type-config-nestjs';
 import { stdTimeFunctions } from 'pino';
 
 import { TransactionContext } from '../transaction/transaction-context';
 
 import { errSerializer, reqSerializer, resSerializer } from './serializers';
 
-/* eslint-disable  */
-export function createPinoHttpConfig(configService: ConfigService) {
-  const logLevel = configService.get<string>('logging.level') ?? 'debug';
-  const appName =
-    configService.get<string>('app.meta.name') ?? 'catalyst-nestjs';
-  const logFormat = configService.get<string>('logging.format') ?? 'json';
+@ConfigurationProperties('logging')
+export class LoggingConfig {
+  @ConfigProperty('level') @Required() level: string;
+  @ConfigProperty('format') @Required() logFormat: string;
+}
 
+@ConfigurationProperties('app')
+export class AppConfig {
+  @ConfigProperty('meta.name') @Required() appName: string;
+}
+
+/* eslint-disable  */
+export function createPinoHttpConfig(
+  loggingConfig: LoggingConfig,
+  appConfig: AppConfig,
+) {
   return {
-    level: logLevel,
+    level: loggingConfig.level,
     base: {
-      service: appName,
+      service: appConfig.appName,
       pid: process.pid,
     },
     formatters: {
@@ -72,7 +85,7 @@ export function createPinoHttpConfig(configService: ConfigService) {
       censor: '[REDACTED]',
     },
     timestamp: () => stdTimeFunctions.isoTime(),
-    ...(logFormat === 'pretty' && {
+    ...(loggingConfig.logFormat === 'pretty' && {
       transport: {
         target: 'pino-pretty',
         options: {
