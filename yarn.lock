@@ -3829,22 +3829,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@snow-tzu/type-config-nestjs@npm:^0.0.2":
-  version: 0.0.2
-  resolution: "@snow-tzu/type-config-nestjs@npm:0.0.2"
+"@snow-tzu/type-config-nestjs@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "@snow-tzu/type-config-nestjs@npm:0.0.4"
   dependencies:
-    "@snow-tzu/type-config": "npm:0.0.2"
+    "@snow-tzu/type-config": "npm:0.0.4"
   peerDependencies:
     "@nestjs/common": ^9.0.0 || ^10.0.0 || ^11.0.0
     "@nestjs/core": ^9.0.0 || ^10.0.0 || ^11.0.0
     reflect-metadata: ^0.2.0
-  checksum: 4b45dcea4c657bb20204c9d1263225baddf2d2e1dff91bdf6b9a1346acfb4cf78431bde0d6c257dcf10a650189cb70d16a0eac082bffe3bd6478117caa4821b5
+  checksum: d5c863a4b763fd95a3b413fdb408e86db45dc8f9467838a068762e848df5ce4f026ec7f451c472aaeed54093e87bd74f5564cb0bf5072243432b3a4a06c472f0
   languageName: node
   linkType: hard
 
-"@snow-tzu/type-config@npm:0.0.2":
-  version: 0.0.2
-  resolution: "@snow-tzu/type-config@npm:0.0.2"
+"@snow-tzu/type-config@npm:0.0.4":
+  version: 0.0.4
+  resolution: "@snow-tzu/type-config@npm:0.0.4"
   dependencies:
     chokidar: "npm:^3.5.3"
     class-transformer: "npm:^0.5.1"
@@ -3854,7 +3854,7 @@ __metadata:
     reflect-metadata: "npm:^0.2.1"
   peerDependencies:
     reflect-metadata: ^0.2.0
-  checksum: 04e603de82c7bdd7ed34275aead79dc47766af3fc281c22a285ecd297633a5d25e325f72cd6e4582e7e50a986182a41c8e4506c2d37572a0aea675eaafde6fbc
+  checksum: 3c00e75e4a035736c2db6bb6ba98fdfc159a088dab41c19dbf62185c62f28226b25502bcdd74be35f0ea4f3d8fe0e078c1d45284826b3cfb0d08b6b6d4f53968
   languageName: node
   linkType: hard
 
@@ -5446,7 +5446,7 @@ __metadata:
     "@snow-tzu/aws-message-publisher": "npm:^0.0.3"
     "@snow-tzu/nest-openapi-code-generator": "npm:^0.0.11"
     "@snow-tzu/nest-sqs-listener": "npm:^0.0.9"
-    "@snow-tzu/type-config-nestjs": "npm:^0.0.2"
+    "@snow-tzu/type-config-nestjs": "npm:^0.0.4"
     "@types/jest": "npm:^29.5.2"
     "@types/node": "npm:^20.3.1"
     "@types/opossum": "npm:^8.1.9"

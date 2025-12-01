@@ -1,28 +1,27 @@
 import { SQSClient } from '@aws-sdk/client-sqs';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+
+import { AwsSharedConfig } from '@shared/config/aws.shared.config';
+
+import { SqsConfig } from './sqs.config';
 
 @Injectable()
 export class SqsClientProvider {
   private client?: SQSClient;
 
-  constructor(private readonly config?: ConfigService) {}
+  constructor(
+    private readonly sqsConfig: SqsConfig,
+    private readonly awsConfig: AwsSharedConfig,
+  ) {}
 
   getClient(): SQSClient {
     if (!this.client) {
-      const region =
-        this.config?.get<string>('aws.region') ??
-        process.env.AWS_REGION ??
-        'us-east-1';
-      const useStatic = this.config?.get<boolean>(
-        'aws.sqs.useStaticCredentials',
-      );
-      const accessKeyId = this.config?.get<string>('aws.sqs.accessKeyId');
-      const secretAccessKey = this.config?.get<string>(
-        'aws.sqs.secretAccessKey',
-      );
-      const sessionToken = this.config?.get<string>('aws.sqs.sessionToken');
-      const endpoint = this.config?.get<string>('aws.sqs.endpoint');
+      const region = this.awsConfig.region;
+      const useStatic = this.sqsConfig.useStaticCredentials;
+      const accessKeyId = this.sqsConfig.accessKeyId;
+      const secretAccessKey = this.sqsConfig.secretAccessKey;
+      const sessionToken = this.sqsConfig.sessionToken;
+      const endpoint = this.sqsConfig.endpoint;
 
       if (useStatic && accessKeyId && secretAccessKey) {
         this.client = new SQSClient({

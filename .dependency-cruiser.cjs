@@ -11,7 +11,8 @@ module.exports = {
       to: {
         path: '^src/',
         pathNot: [
-          '^src/shared'
+          '^src/shared',
+          '^src/config',
         ],
       },
     },
@@ -26,7 +27,11 @@ module.exports = {
         path: '^src/',
         pathNot: [
           '^src/customs',
-          '^src/shared'
+          '^src/shared',
+          '^src/events',
+          '^src/clients',
+          '^src/constants',
+          '^src/aws'
         ]
       }
     },

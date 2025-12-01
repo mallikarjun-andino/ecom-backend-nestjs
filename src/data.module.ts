@@ -5,9 +5,9 @@ import {
   ITenantConfigProvider,
   TENANT_CONFIG_PROVIDER,
 } from '@shared/database/interfaces/tenant-config-provider';
-import { SharedModule } from '@shared/shared.module';
 
 import { Message } from './customs/query/message.entity';
+import { SharedModule } from './shared.module';
 
 @Global()
 @Module({

@@ -1,6 +1,5 @@
 import { SQSClient } from '@aws-sdk/client-sqs';
 import { Logger, Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   AcknowledgementMode,
   SqsMessageListenerContainer,
@@ -10,7 +9,8 @@ import {
 import { COMMON_SQS_CLIENT } from '../constants/tokens';
 import { SampleEvent } from '../events/sample.event';
 
-import { Constants, SAMPLE_CONTAINER } from './constants';
+import { SAMPLE_CONTAINER } from './constants';
+import { ExampleQueueConfig } from './example.queue.config';
 import { SampleSqsConsumer } from './sqs-listener.sample';
 
 @Module({
@@ -19,7 +19,7 @@ import { SampleSqsConsumer } from './sqs-listener.sample';
     {
       provide: SAMPLE_CONTAINER,
       useFactory: (
-        configService: ConfigService,
+        exampleQueueConfig: ExampleQueueConfig,
         listener: SampleSqsConsumer,
         sqsClient: SQSClient,
       ): SqsMessageListenerContainer<SampleEvent> => {
@@ -32,9 +32,7 @@ import { SampleSqsConsumer } from './sqs-listener.sample';
 
         container.configure((options) => {
           options
-            .queueName(
-              configService.get(Constants.queueConfigPath) ?? 'dummy-queue',
-            )
+            .queueName(exampleQueueConfig.name)
             .pollTimeout(20)
             .autoStartup(true)
             .acknowledgementMode(AcknowledgementMode.ON_SUCCESS)
@@ -52,7 +50,7 @@ import { SampleSqsConsumer } from './sqs-listener.sample';
         logger.log('Sample Event Container configured successfully');
         return container;
       },
-      inject: [ConfigService, SampleSqsConsumer, COMMON_SQS_CLIENT],
+      inject: [ExampleQueueConfig, SampleSqsConsumer, COMMON_SQS_CLIENT],
     },
   ],
   exports: [SAMPLE_CONTAINER],

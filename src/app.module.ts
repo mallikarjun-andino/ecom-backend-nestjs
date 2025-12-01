@@ -6,11 +6,10 @@ import { RequestInterceptor } from '@shared';
 import { MigrationService } from '@shared/database/migrations/migration.service';
 import { TenantContextMiddleware } from '@shared/kernel/tenant/tenant-context.middleware';
 import {
+  AppConfig,
   createPinoHttpConfig,
   LoggingConfig,
-  AppConfig,
 } from '@shared/logging/config';
-import { SharedModule } from '@shared/shared.module';
 
 import { ActuatorModule } from './actuator/actuator.module';
 import { AppController } from './app.controller';
@@ -20,7 +19,9 @@ import { AppConfigModule } from './config.module';
 import { ContractFirstModule } from './contract-first/module';
 import { CustomsModule } from './customs/module';
 import { DemoModule } from './demo/demo.module';
+// eslint-disable-next-line import/namespace
 import { SampleSqsListenerModule } from './examples/sqs-listener.module.sample';
+import { SharedModule } from './shared.module';
 
 @Module({
   imports: [
