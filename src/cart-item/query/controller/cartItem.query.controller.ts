@@ -1,11 +1,11 @@
 // cart.item.query.controller.ts
 import { Controller } from '@nestjs/common';
 
-import { CartItemQueryControllerBase } from '@generated/cartItem.query/cartItem.query.controller.base';
+import { CartItemQueryControllerBase } from '@generated/cartitem.query/cartitem.query.controller.base';
 import {
   GetCartItemByIdResponseDto,
   GetCartItemsResponseDto,
-} from '@generated/cartItem.query/cartitem.query.dto';
+} from '@generated/cartitem.query/cartitem.query.dto';
 
 import { CartItemQueryService } from '../service/cartItem.query.service';
 

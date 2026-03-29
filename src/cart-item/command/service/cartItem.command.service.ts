@@ -18,7 +18,7 @@ import {
   UpdateCartItemRequestDto,
   UpdateCartItemResponseDto,
   DeleteCartItemResponseDto,
-} from '@generated/cartItem.command/cartItem.command.dto';
+} from '@generated/cartitem.command/cartitem.command.dto';
 import { TenantRequest, Transactional, TransactionContext } from '@shared';
 import { DatasourceManager } from '@shared/database/datasource.manager';
 

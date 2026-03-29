@@ -1,13 +1,13 @@
 import { Controller } from '@nestjs/common';
 
-import { CartItemCommandControllerBase } from '@generated/cartItem.command/cartItem.command.controller.base';
+import { CartItemCommandControllerBase } from '@generated/cartitem.command/cartitem.command.controller.base';
 import {
   AddCartItemRequestDto,
   AddCartItemResponseDto,
   DeleteCartItemResponseDto,
   UpdateCartItemRequestDto,
   UpdateCartItemResponseDto,
-} from '@generated/cartItem.command/cartitem.command.dto';
+} from '@generated/cartitem.command/cartitem.command.dto';
 
 import { CartItemCommandService } from '../service/cartItem.command.service';
 

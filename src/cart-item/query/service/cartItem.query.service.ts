@@ -14,7 +14,7 @@ import { REQUEST } from '@nestjs/core';
 import {
   GetCartItemByIdResponseDto,
   GetCartItemsResponseDto,
-} from '@generated/cartItem.query/cartitem.query.dto';
+} from '@generated/cartitem.query/cartitem.query.dto';
 import { TenantRequest, Transactional, TransactionContext } from '@shared';
 import { DatasourceManager } from '@shared/database/datasource.manager';
 
