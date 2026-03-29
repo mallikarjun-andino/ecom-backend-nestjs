@@ -1,0 +1,238 @@
+openapi: 3.0.3
+info:
+  title: Category Command API
+  version: 1.0.0
+  description: Write operations for creating, updating, and deleting categories in the e-commerce application.
+
+paths:
+
+  # ---------------------------------------------------------------------------
+  # POST /categories — Create a new category
+  # ---------------------------------------------------------------------------
+  /categories:
+    post:
+      summary: Create a new category
+      operationId: createCategory
+      tags:
+        - Categories
+      parameters:
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCategoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  # ---------------------------------------------------------------------------
+  # PUT /categories/{category_id} — Update category name
+  # ---------------------------------------------------------------------------
+  /categories/{category_id}:
+    put:
+      summary: Update category name
+      operationId: updateCategory
+      tags:
+        - Categories
+      parameters:
+        - $ref: '#/components/parameters/CategoryIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryRequest'
+      responses:
+        '200':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCategoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    # -------------------------------------------------------------------------
+    # DELETE /categories/{category_id} — Delete a category
+    # -------------------------------------------------------------------------
+    delete:
+      summary: Delete a category
+      operationId: deleteCategory
+      tags:
+        - Categories
+      parameters:
+        - $ref: '#/components/parameters/CategoryIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '204':
+          description: Category deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCategoryResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+# =============================================================================
+# Components
+# =============================================================================
+components:
+
+  # ---------------------------------------------------------------------------
+  # Reusable Parameters
+  # ---------------------------------------------------------------------------
+  parameters:
+    CategoryIdPath:
+      name: category_id
+      in: path
+      required: true
+      description: UUID of the category
+      schema:
+        type: string
+        format: uuid
+        example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+
+  # ---------------------------------------------------------------------------
+  # Reusable Responses
+  # ---------------------------------------------------------------------------
+  responses:
+    BadRequest:
+      description: Invalid input or validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Resource conflict (exists or still in use)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  # ---------------------------------------------------------------------------
+  # Schemas / DTOs
+  # ---------------------------------------------------------------------------
+  schemas:
+
+    # ── Request DTOs ────────────────────────────────────────────────────────────
+    
+    CreateCategoryRequest:
+      type: object
+      required:
+        - category_name
+      properties:
+        category_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Electronics"
+
+    UpdateCategoryRequest:
+      type: object
+      required:
+        - category_name
+      properties:
+        category_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Electronics and Gadgets"
+
+    # ── Response DTOs ────────────────────────────────────────────────────────────
+    
+    CreateCategoryResponse:
+      type: object
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+        category_name:
+          type: string
+          example: "Electronics"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+
+    UpdateCategoryResponse:
+      type: object
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+        category_name:
+          type: string
+          example: "Electronics and Gadgets"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T09:00:00Z"
+
+    DeleteCategoryResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Category deleted successfully"
+        category_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+
+    # ── Error DTO ─────────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Validation failed: category_name is required"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        trace_id:
+          type: string
+          example: "abc123xyz"

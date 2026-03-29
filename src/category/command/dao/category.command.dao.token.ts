@@ -1,0 +1,1 @@
+export const CATEGORY_COMMAND_DAO = Symbol('CATEGORY_COMMAND_DAO');

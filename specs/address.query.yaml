@@ -1,0 +1,250 @@
+openapi: 3.0.3
+info:
+  title: Address Query API
+  version: 1.0.0
+  description: Read operations for retrieving user addresses in the e-commerce application.
+
+paths:
+
+  # ---------------------------------------------------------------------------
+  # GET /address/user/{user_id} — Get all addresses for a user
+  # ---------------------------------------------------------------------------
+  /address/user/{user_id}:
+    get:
+      summary: Get all addresses for a user
+      operationId: getAddressesByUserId
+      tags:
+        - Address
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Addresses retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAddressesByUserIdResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # GET /address/{address_id} — Get address by ID
+  # ---------------------------------------------------------------------------
+  /address/{address_id}:
+    get:
+      summary: Get address by ID
+      operationId: getAddressById
+      tags:
+        - Address
+      parameters:
+        - $ref: '#/components/parameters/AddressIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Address retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAddressByIdResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # GET /address/user/{user_id}/default — Get default address for a user
+  # ---------------------------------------------------------------------------
+  /address/user/{user_id}/default:
+    get:
+      summary: Get default address for a user
+      operationId: getDefaultAddress
+      tags:
+        - Address
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Default address retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDefaultAddressResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# =============================================================================
+# Components
+# =============================================================================
+components:
+
+  # ---------------------------------------------------------------------------
+  # Reusable Parameters
+  # ---------------------------------------------------------------------------
+  parameters:
+    UserIdPath:
+      name: user_id
+      in: path
+      required: true
+      description: UUID of the user
+      schema:
+        type: string
+        format: uuid
+        example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+
+    AddressIdPath:
+      name: address_id
+      in: path
+      required: true
+      description: UUID of the address
+      schema:
+        type: string
+        format: uuid
+        example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+
+  # ---------------------------------------------------------------------------
+  # Reusable Responses
+  # ---------------------------------------------------------------------------
+  responses:
+    NotFound:
+      description: Address not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  # ---------------------------------------------------------------------------
+  # Schemas / DTOs
+  # ---------------------------------------------------------------------------
+  schemas:
+
+    # ── Response DTOs ────────────────────────────────────────────────────────────
+    
+    GetAddressesByUserIdResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        total_addresses:
+          type: integer
+          example: 3
+        default_address_id:
+          type: string
+          format: uuid
+          nullable: true
+          example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+
+    GetAddressByIdResponse:
+      type: object
+      properties:
+        address_id:
+          type: string
+          format: uuid
+          example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        address:
+          type: string
+          example: "123 Main St, Bangalore, Karnataka, 560001, India"
+        is_default:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+
+    GetDefaultAddressResponse:
+      type: object
+      properties:
+        address_id:
+          type: string
+          format: uuid
+          example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        address:
+          type: string
+          example: "123 Main St, Bangalore, Karnataka, 560001, India"
+        is_default:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+
+    # ── Reusable Address DTO ────────────────────────────────────────────────────
+    Address:
+      type: object
+      properties:
+        address_id:
+          type: string
+          format: uuid
+          example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        address:
+          type: string
+          example: "123 Main St, Bangalore, Karnataka, 560001, India"
+        is_default:
+          type: boolean
+          example: false
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+
+    # ── Error DTO ─────────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: "Not Found"
+        message:
+          type: string
+          example: "Address not found"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        trace_id:
+          type: string
+          example: "abc123xyz"
+
+tags:
+  - name: Address
+    description: Operations for retrieving user addresses (read operations only)

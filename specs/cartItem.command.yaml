@@ -1,0 +1,282 @@
+openapi: 3.0.3
+info:
+  title: Cart Item Command API
+  version: 1.0.0
+  description: Write operations for managing cart items in the e-commerce application.
+
+paths:
+
+  # ---------------------------------------------------------------------------
+  # POST /cart/{cart_id}/items — Add item to cart
+  # ---------------------------------------------------------------------------
+  /cart/{cart_id}/items:
+    post:
+      summary: Add item to cart
+      operationId: addCartItem
+      tags:
+        - Cart Items
+      parameters:
+        - $ref: '#/components/parameters/CartIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCartItemRequest'
+      responses:
+        '201':
+          description: Item added to cart successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddCartItemResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  # ---------------------------------------------------------------------------
+  # PUT /cart/{cart_id}/items/{cart_item_id} — Update cart item quantity
+  # ---------------------------------------------------------------------------
+  /cart/{cart_id}/items/{cart_item_id}:
+    put:
+      summary: Update cart item quantity
+      operationId: updateCartItem
+      tags:
+        - Cart Items
+      parameters:
+        - $ref: '#/components/parameters/CartIdPath'
+        - $ref: '#/components/parameters/CartItemIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCartItemRequest'
+      responses:
+        '200':
+          description: Cart item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCartItemResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    # -------------------------------------------------------------------------
+    # DELETE /cart/{cart_id}/items/{cart_item_id} — Remove item from cart
+    # -------------------------------------------------------------------------
+    delete:
+      summary: Remove item from cart
+      operationId: deleteCartItem
+      tags:
+        - Cart Items
+      parameters:
+        - $ref: '#/components/parameters/CartIdPath'
+        - $ref: '#/components/parameters/CartItemIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Cart item removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCartItemResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# =============================================================================
+# Components
+# =============================================================================
+components:
+
+  # ---------------------------------------------------------------------------
+  # Reusable Parameters
+  # ---------------------------------------------------------------------------
+  parameters:
+    CartIdPath:
+      name: cart_id
+      in: path
+      required: true
+      description: UUID of the cart
+      schema:
+        type: string
+        format: uuid
+        example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+    CartItemIdPath:
+      name: cart_item_id
+      in: path
+      required: true
+      description: UUID of the cart item
+      schema:
+        type: string
+        format: uuid
+        example: "b2c3d4e5-f6a7-8901-bcde-f23456789012"
+
+  # ---------------------------------------------------------------------------
+  # Reusable Responses
+  # ---------------------------------------------------------------------------
+  responses:
+    BadRequest:
+      description: Invalid input or validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Resource conflict (item already exists in cart)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  # ---------------------------------------------------------------------------
+  # Schemas / DTOs
+  # ---------------------------------------------------------------------------
+  schemas:
+
+    # ── Request DTOs ────────────────────────────────────────────────────────────
+    
+    AddCartItemRequest:
+      type: object
+      required:
+        - product_id
+        - quantity
+      properties:
+        product_id:
+          type: string
+          format: uuid
+          example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+        quantity:
+          type: integer
+          minimum: 1
+          example: 2
+
+    UpdateCartItemRequest:
+      type: object
+      required:
+        - quantity
+      properties:
+        quantity:
+          type: integer
+          minimum: 1
+          example: 3
+
+    # ── Response DTOs ────────────────────────────────────────────────────────────
+    
+    AddCartItemResponse:
+      type: object
+      properties:
+        cart_item_id:
+          type: string
+          format: uuid
+          example: "b2c3d4e5-f6a7-8901-bcde-f23456789012"
+        cart_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        product_id:
+          type: string
+          format: uuid
+          example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+        quantity:
+          type: integer
+          example: 2
+        price:
+          type: number
+          format: float
+          example: 1299.99
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+
+    UpdateCartItemResponse:
+      type: object
+      properties:
+        cart_item_id:
+          type: string
+          format: uuid
+          example: "b2c3d4e5-f6a7-8901-bcde-f23456789012"
+        cart_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        product_id:
+          type: string
+          format: uuid
+          example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+        quantity:
+          type: integer
+          example: 3
+        price:
+          type: number
+          format: float
+          example: 1299.99
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T09:00:00Z"
+
+    DeleteCartItemResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Cart item removed successfully"
+        cart_item_id:
+          type: string
+          format: uuid
+          example: "b2c3d4e5-f6a7-8901-bcde-f23456789012"
+        cart_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+    # ── Error DTO ─────────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Validation failed: quantity must be at least 1"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        trace_id:
+          type: string
+          example: "abc123xyz"
+
+tags:
+  - name: Cart Items
+    description: Operations for managing cart items (write operations only)

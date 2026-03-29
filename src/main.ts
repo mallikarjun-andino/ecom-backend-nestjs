@@ -1,3 +1,4 @@
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import {
@@ -23,6 +24,17 @@ async function bootstrap(): Promise<void> {
   app.enableShutdownHooks();
   app.useLogger(logger);
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+      exceptionFactory: (errors) => new BadRequestException(errors),
+    }),
+  );
 
   const migrationService = app.get(MigrationService);
   await migrationService.runMigrationsOnAllTenantDatabases();

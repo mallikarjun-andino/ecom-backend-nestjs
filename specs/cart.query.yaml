@@ -1,0 +1,113 @@
+openapi: 3.0.3
+info:
+  title: Cart Query API
+  version: 1.0.0
+  description: Read operations for retrieving carts in the e-commerce application.
+
+paths:
+
+  # ---------------------------------------------------------------------------
+  # GET /cart/user/{user_id} — Get cart by user ID
+  # ---------------------------------------------------------------------------
+  /cart/user/{user_id}:
+    get:
+      summary: Get cart by user ID
+      operationId: getCartByUserId
+      tags:
+        - Cart
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Cart retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCartByUserIdResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# =============================================================================
+# Components
+# =============================================================================
+components:
+
+  # ---------------------------------------------------------------------------
+  # Reusable Parameters
+  # ---------------------------------------------------------------------------
+  parameters:
+    UserIdPath:
+      name: user_id
+      in: path
+      required: true
+      description: UUID of the user
+      schema:
+        type: string
+        format: uuid
+        example: "f7e8d9c0-b1a2-3456-7890-cdef12345678"
+
+  # ---------------------------------------------------------------------------
+  # Reusable Responses
+  # ---------------------------------------------------------------------------
+  responses:
+    NotFound:
+      description: Cart not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  # ---------------------------------------------------------------------------
+  # Schemas / DTOs
+  # ---------------------------------------------------------------------------
+  schemas:
+
+    # ── Response DTOs ────────────────────────────────────────────────────────────
+    
+    GetCartByUserIdResponse:
+      type: object
+      properties:
+        cart_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        user_id:
+          type: string
+          format: uuid
+          example: "f7e8d9c0-b1a2-3456-7890-cdef12345678"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+
+    # ── Error DTO ─────────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: "Not Found"
+        message:
+          type: string
+          example: "Cart not found for user f7e8d9c0-b1a2-3456-7890-cdef12345678"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        trace_id:
+          type: string
+          example: "abc123xyz"
+
+tags:
+  - name: Cart
+    description: Operations for retrieving shopping carts

@@ -1,0 +1,24 @@
+components:
+  parameters:
+    TraceHeader:
+      name: x-trace-id
+      in: header
+      required: true
+      schema:
+        type: string
+        example: trace-123
+    BusinessUnitHeader:
+      name: x-business-unit
+      in: header
+      required: true
+      schema:
+        type: string
+        example: andino
+    CountryCodeHeader:
+      name: x-country-code
+      in: header
+      required: true
+      schema:
+        type: string
+        enum: [us, ag, cl]
+        example: us

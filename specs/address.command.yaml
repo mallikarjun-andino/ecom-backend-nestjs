@@ -1,0 +1,308 @@
+openapi: 3.0.3
+info:
+  title: Address Command API
+  version: 1.0.0
+  description: Write operations for managing user addresses in the e-commerce application.
+
+paths:
+
+  # ---------------------------------------------------------------------------
+  # POST /address — Add a new address
+  # ---------------------------------------------------------------------------
+  /address:
+    post:
+      summary: Add a new address
+      operationId: addAddress
+      tags:
+        - Address
+      parameters:
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddAddressRequest'
+      responses:
+        '201':
+          description: Address added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddAddressResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  # ---------------------------------------------------------------------------
+  # PUT /address/{address_id} — Update an address
+  # ---------------------------------------------------------------------------
+  /address/{address_id}:
+    put:
+      summary: Update an address
+      operationId: updateAddress
+      tags:
+        - Address
+      parameters:
+        - $ref: '#/components/parameters/AddressIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAddressRequest'
+      responses:
+        '200':
+          description: Address updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateAddressResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    # -------------------------------------------------------------------------
+    # PATCH /address/{address_id}/default — Set address as default
+    # -------------------------------------------------------------------------
+    patch:
+      summary: Set address as default
+      operationId: setDefaultAddress
+      tags:
+        - Address
+      parameters:
+        - $ref: '#/components/parameters/AddressIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Address set as default successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetDefaultAddressResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    # -------------------------------------------------------------------------
+    # DELETE /address/{address_id} — Delete an address
+    # -------------------------------------------------------------------------
+    delete:
+      summary: Delete an address
+      operationId: deleteAddress
+      tags:
+        - Address
+      parameters:
+        - $ref: '#/components/parameters/AddressIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Address deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAddressResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Cannot delete default address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+# =============================================================================
+# Components
+# =============================================================================
+components:
+
+  # ---------------------------------------------------------------------------
+  # Reusable Parameters
+  # ---------------------------------------------------------------------------
+  parameters:
+    AddressIdPath:
+      name: address_id
+      in: path
+      required: true
+      description: UUID of the address
+      schema:
+        type: string
+        format: uuid
+        example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+
+  # ---------------------------------------------------------------------------
+  # Reusable Responses
+  # ---------------------------------------------------------------------------
+  responses:
+    BadRequest:
+      description: Invalid input or validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Resource conflict (e.g., address already exists)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  # ---------------------------------------------------------------------------
+  # Schemas / DTOs
+  # ---------------------------------------------------------------------------
+  schemas:
+
+    # ── Request DTOs ────────────────────────────────────────────────────────────
+    
+    AddAddressRequest:
+      type: object
+      required:
+        - user_id
+        - address
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        address:
+          type: string
+          minLength: 1
+          maxLength: 500
+          example: "123 Main St, Bangalore, Karnataka, 560001, India"
+        is_default:
+          type: boolean
+          default: false
+          example: false
+
+    UpdateAddressRequest:
+      type: object
+      required:
+        - address
+      properties:
+        address:
+          type: string
+          minLength: 1
+          maxLength: 500
+          example: "456 Park Ave, Mumbai, Maharashtra, 400001, India"
+
+    # ── Response DTOs ────────────────────────────────────────────────────────────
+    
+    AddAddressResponse:
+      type: object
+      properties:
+        address_id:
+          type: string
+          format: uuid
+          example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        address:
+          type: string
+          example: "123 Main St, Bangalore, Karnataka, 560001, India"
+        is_default:
+          type: boolean
+          example: false
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+
+    UpdateAddressResponse:
+      type: object
+      properties:
+        address_id:
+          type: string
+          format: uuid
+          example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        address:
+          type: string
+          example: "456 Park Ave, Mumbai, Maharashtra, 400001, India"
+        is_default:
+          type: boolean
+          example: false
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T09:00:00Z"
+
+    SetDefaultAddressResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Address set as default successfully"
+        address_id:
+          type: string
+          format: uuid
+          example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+        is_default:
+          type: boolean
+          example: true
+
+    DeleteAddressResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Address deleted successfully"
+        address_id:
+          type: string
+          format: uuid
+          example: "c3d4e5f6-a7b8-9012-cdef-345678901234"
+
+    # ── Error DTO ─────────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Validation failed: address is required"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        trace_id:
+          type: string
+          example: "abc123xyz"
+
+tags:
+  - name: Address
+    description: Operations for managing user addresses (write operations only)

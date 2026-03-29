@@ -1,0 +1,610 @@
+openapi: 3.0.3
+info:
+  title: Product Command API
+  version: 1.0.0
+  description: Write operations (Commands) for managing products in an e-commerce application
+
+paths:
+
+  # ---------------------------------------------------------------------------
+  # POST /products — Create a new product
+  # ---------------------------------------------------------------------------
+  /products:
+    post:
+      summary: Create a new product
+      operationId: createProduct
+      tags:
+        - Products
+      parameters:
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '201':
+          description: Product created successfully
+          headers:
+            x-trace-id:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProductResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  # ---------------------------------------------------------------------------
+  # PUT /products/{product_id} — Full update of a product
+  # ---------------------------------------------------------------------------
+  /products/{product_id}:
+    put:
+      summary: Fully update an existing product
+      operationId: updateProduct
+      tags:
+        - Products
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductRequest'
+      responses:
+        '200':
+          description: Product updated successfully
+          headers:
+            x-trace-id:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateProductResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    # -------------------------------------------------------------------------
+    # PATCH /products/{product_id} — Partial update of a product
+    # -------------------------------------------------------------------------
+    patch:
+      summary: Partially update an existing product
+      operationId: patchProduct
+      tags:
+        - Products
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchProductRequest'
+      responses:
+        '200':
+          description: Product patched successfully
+          headers:
+            x-trace-id:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateProductResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    # -------------------------------------------------------------------------
+    # DELETE /products/{product_id} — Hard delete a product
+    # -------------------------------------------------------------------------
+    delete:
+      summary: Delete a product
+      operationId: deleteProduct
+      tags:
+        - Products
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '204':
+          description: Product deleted successfully
+          headers:
+            x-trace-id:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteProductResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  # ---------------------------------------------------------------------------
+  # PATCH /products/{product_id}/activate — Soft activate a product
+  # ---------------------------------------------------------------------------
+  /products/{product_id}/activate:
+    patch:
+      summary: Activate a product (set is_active = true)
+      operationId: activateProduct
+      tags:
+        - Products
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Product activated successfully
+          headers:
+            x-trace-id:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusUpdateResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # PATCH /products/{product_id}/deactivate — Soft deactivate a product
+  # ---------------------------------------------------------------------------
+  /products/{product_id}/deactivate:
+    patch:
+      summary: Deactivate a product (set is_active = false)
+      operationId: deactivateProduct
+      tags:
+        - Products
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Product deactivated successfully
+          headers:
+            x-trace-id:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusUpdateResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # PATCH /products/{product_id}/stock — Adjust stock quantity
+  # ---------------------------------------------------------------------------
+  /products/{product_id}/stock:
+    patch:
+      summary: Adjust product stock quantity
+      operationId: adjustProductStock
+      tags:
+        - Products
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdjustStockRequest'
+      responses:
+        '200':
+          description: Stock adjusted successfully
+          headers:
+            x-trace-id:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockAdjustmentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Insufficient stock
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+# =============================================================================
+# Components
+# =============================================================================
+components:
+
+  # ---------------------------------------------------------------------------
+  # Reusable Parameters
+  # ---------------------------------------------------------------------------
+  parameters:
+    ProductIdPath:
+      name: product_id
+      in: path
+      required: true
+      description: UUID of the product
+      schema:
+        type: string
+        format: uuid
+        example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+  # ---------------------------------------------------------------------------
+  # Reusable Responses
+  # ---------------------------------------------------------------------------
+  responses:
+    BadRequest:
+      description: Invalid input or validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Conflict — resource already exists or cannot be deleted due to dependencies
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  # ---------------------------------------------------------------------------
+  # Schemas / DTOs
+  # ---------------------------------------------------------------------------
+  schemas:
+
+    # ── Request DTOs ────────────────────────────────────────────────────────────
+    
+    CreateProductRequest:
+      type: object
+      required:
+        - product_name
+        - category_id
+        - price
+        - stock
+      properties:
+        product_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "iPhone 15 Case"
+        category_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+        price:
+          type: number
+          format: float
+          minimum: 0
+          example: 999.99
+        stock:
+          type: integer
+          minimum: 0
+          example: 100
+        rating:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 5
+          nullable: true
+          example: 4.5
+        image:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+          default: []
+          example: ["https://cdn.example.com/product.jpg", "https://cdn.example.com/product-side.jpg"]
+        description:
+          type: string
+          nullable: true
+          example: "Premium silicone case for iPhone 15"
+        is_active:
+          type: boolean
+          default: true
+
+    UpdateProductRequest:
+      type: object
+      required:
+        - product_name
+        - category_id
+        - price
+        - stock
+        - is_active
+      properties:
+        product_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "iPhone 15 Case Pro"
+        category_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+        price:
+          type: number
+          format: float
+          minimum: 0
+          example: 1099.99
+        stock:
+          type: integer
+          minimum: 0
+          example: 50
+        rating:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 5
+          nullable: true
+          example: 4.7
+        image:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+          default: []
+          example: ["https://cdn.example.com/product-v2.jpg", "https://cdn.example.com/product-v2-side.jpg"]
+        description:
+          type: string
+          nullable: true
+          example: "Updated premium silicone case"
+        is_active:
+          type: boolean
+          example: true
+
+    PatchProductRequest:
+      type: object
+      description: All fields are optional. Only provided fields will be updated.
+      minProperties: 1
+      properties:
+        product_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "iPhone 15 Case Pro Max"
+        category_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+        price:
+          type: number
+          format: float
+          minimum: 0
+          example: 1199.99
+        stock:
+          type: integer
+          minimum: 0
+          example: 75
+        rating:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 5
+          nullable: true
+          example: 4.8
+        image:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+          default: []
+          example: ["https://cdn.example.com/product-new.jpg", "https://cdn.example.com/product-new-back.jpg"]
+        description:
+          type: string
+          nullable: true
+          example: "New and improved case"
+        is_active:
+          type: boolean
+          example: true
+
+    AdjustStockRequest:
+      type: object
+      required:
+        - adjustment
+      properties:
+        adjustment:
+          type: integer
+          description: "Positive value to add stock (restock), negative value to reduce stock (sale/reservation)."
+          example: -5
+        reason:
+          type: string
+          description: Optional reason for the stock adjustment
+          example: "Manual correction after inventory audit"
+
+    # ── Response DTOs ────────────────────────────────────────────────────────────
+    
+    CreateProductResponse:
+      type: object
+      properties:
+        product_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        product_name:
+          type: string
+          example: "iPhone 15 Case"
+        category_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+        price:
+          type: number
+          format: float
+          example: 999.99
+        stock:
+          type: integer
+          example: 100
+        rating:
+          type: number
+          format: float
+          nullable: true
+          example: 4.5
+        image:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+          example: ["https://cdn.example.com/product.jpg"]
+        description:
+          type: string
+          nullable: true
+          example: "Premium silicone case for iPhone 15"
+        is_active:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+
+    UpdateProductResponse:
+      type: object
+      properties:
+        product_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        product_name:
+          type: string
+          example: "iPhone 15 Case Pro"
+        category_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+        price:
+          type: number
+          format: float
+          example: 1099.99
+        stock:
+          type: integer
+          example: 50
+        rating:
+          type: number
+          format: float
+          nullable: true
+          example: 4.7
+        image:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+          example: ["https://cdn.example.com/product-v2.jpg"]
+        description:
+          type: string
+          nullable: true
+          example: "Updated premium silicone case"
+        is_active:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T09:00:00Z"
+
+    DeleteProductResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Product deleted successfully"
+        product_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+    StatusUpdateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Product activated successfully"
+        product_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        is_active:
+          type: boolean
+          example: true
+
+    StockAdjustmentResponse:
+      type: object
+      properties:
+        product_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        product_name:
+          type: string
+          example: "iPhone 15 Case"
+        stock:
+          type: integer
+          example: 95
+
+    # ── Error DTO ─────────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Validation failed: price must be a positive number"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        trace_id:
+          type: string
+          example: "abc123xyz"

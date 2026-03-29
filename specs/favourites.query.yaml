@@ -1,0 +1,272 @@
+openapi: 3.0.3
+info:
+  title: Favourites Query API
+  version: 1.0.0
+  description: Read operations for retrieving user favourites in the e-commerce application.
+
+paths:
+
+  # ---------------------------------------------------------------------------
+  # GET /favourites/user/{user_id} — Get all favourites for a user
+  # ---------------------------------------------------------------------------
+  /favourites/user/{user_id}:
+    get:
+      summary: Get all favourites for a user
+      operationId: getFavouritesByUserId
+      tags:
+        - Favourites
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Favourites retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFavouritesByUserIdResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # GET /favourites/{favourite_id} — Get a favourite by ID
+  # ---------------------------------------------------------------------------
+  /favourites/{favourite_id}:
+    get:
+      summary: Get a favourite by ID
+      operationId: getFavouriteById
+      tags:
+        - Favourites
+      parameters:
+        - $ref: '#/components/parameters/FavouriteIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Favourite retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFavouriteByIdResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # GET /favourites/user/{user_id}/product/{product_id} — Check if product is favourited
+  # ---------------------------------------------------------------------------
+  /favourites/user/{user_id}/product/{product_id}:
+    get:
+      summary: Check if a product is in user favourites
+      operationId: isFavourited
+      tags:
+        - Favourites
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - $ref: '#/components/parameters/ProductIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Check completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IsFavouritedResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# =============================================================================
+# Components
+# =============================================================================
+components:
+
+  # ---------------------------------------------------------------------------
+  # Reusable Parameters
+  # ---------------------------------------------------------------------------
+  parameters:
+    FavouriteIdPath:
+      name: favourite_id
+      in: path
+      required: true
+      description: UUID of the favourite
+      schema:
+        type: string
+        format: uuid
+        example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+
+    UserIdPath:
+      name: user_id
+      in: path
+      required: true
+      description: UUID of the user
+      schema:
+        type: string
+        format: uuid
+        example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+
+    ProductIdPath:
+      name: product_id
+      in: path
+      required: true
+      description: UUID of the product
+      schema:
+        type: string
+        format: uuid
+        example: "a06dcaf3-d8bd-4516-81e7-1f5a3ac2b39f"
+
+  # ---------------------------------------------------------------------------
+  # Reusable Responses
+  # ---------------------------------------------------------------------------
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  # ---------------------------------------------------------------------------
+  # Schemas / DTOs
+  # ---------------------------------------------------------------------------
+  schemas:
+
+    # ── Response DTOs ────────────────────────────────────────────────────────────
+    
+    GetFavouritesByUserIdResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Favourite'
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        total_favourites:
+          type: integer
+          example: 5
+
+    GetFavouriteByIdResponse:
+      type: object
+      properties:
+        favourite_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        product_id:
+          type: string
+          format: uuid
+          example: "a06dcaf3-d8bd-4516-81e7-1f5a3ac2b39f"
+        product_name:
+          type: string
+          example: "iPhone 15 Pro Case"
+        product_price:
+          type: number
+          format: float
+          example: 1299.99
+        product_image:
+          type: array
+          items:
+            type: string
+            format: uri
+          example: ["https://cdn.example.com/iphone-case.jpg"]
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+
+    IsFavouritedResponse:
+      type: object
+      properties:
+        is_favourited:
+          type: boolean
+          example: true
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        product_id:
+          type: string
+          format: uuid
+          example: "a06dcaf3-d8bd-4516-81e7-1f5a3ac2b39f"
+        favourite_id:
+          type: string
+          format: uuid
+          nullable: true
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+
+    # ── Reusable Favourite DTO ────────────────────────────────────────────────────
+    Favourite:
+      type: object
+      properties:
+        favourite_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        product_id:
+          type: string
+          format: uuid
+          example: "a06dcaf3-d8bd-4516-81e7-1f5a3ac2b39f"
+        product_name:
+          type: string
+          example: "iPhone 15 Pro Case"
+        product_price:
+          type: number
+          format: float
+          example: 1299.99
+        product_image:
+          type: array
+          items:
+            type: string
+            format: uri
+          example: ["https://cdn.example.com/iphone-case.jpg"]
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+
+    # ── Error DTO ─────────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: "Not Found"
+        message:
+          type: string
+          example: "Favourite not found"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        trace_id:
+          type: string
+          example: "abc123xyz"
+
+tags:
+  - name: Favourites
+    description: Operations for retrieving user favourites

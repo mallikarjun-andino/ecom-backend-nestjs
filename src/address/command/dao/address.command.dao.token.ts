@@ -1,0 +1,1 @@
+export const ADDRESS_COMMAND_DAO = Symbol('ADDRESS_COMMAND_DAO');

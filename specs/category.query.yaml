@@ -1,0 +1,225 @@
+openapi: 3.0.3
+info:
+  title: Category Query API
+  version: 1.0.0
+  description: Read operations for listing and retrieving categories in the e-commerce application.
+
+paths:
+
+  # ---------------------------------------------------------------------------
+  # GET /categories — List categories with filters and pagination
+  # ---------------------------------------------------------------------------
+  /categories:
+    get:
+      summary: List categories with filters and pagination
+      operationId: listCategories
+      tags:
+        - Categories
+      parameters:
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+        - name: category_name
+          in: query
+          required: false
+          description: Filter by category name (partial match)
+          schema:
+            type: string
+            example: "Electronics"
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            example: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+            example: 20
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - category_name
+              - created_at
+              - updated_at
+            default: created_at
+            example: "category_name"
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+            example: "asc"
+      responses:
+        '200':
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListCategoriesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # ---------------------------------------------------------------------------
+  # GET /categories/{category_id} — Get a category by ID
+  # ---------------------------------------------------------------------------
+  /categories/{category_id}:
+    get:
+      summary: Get a category by ID
+      operationId: getCategoryById
+      tags:
+        - Categories
+      parameters:
+        - $ref: '#/components/parameters/CategoryIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Category retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCategoryByIdResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# =============================================================================
+# Components
+# =============================================================================
+components:
+
+  # ---------------------------------------------------------------------------
+  # Reusable Parameters
+  # ---------------------------------------------------------------------------
+  parameters:
+    CategoryIdPath:
+      name: category_id
+      in: path
+      required: true
+      description: UUID of the category
+      schema:
+        type: string
+        format: uuid
+        example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+
+  # ---------------------------------------------------------------------------
+  # Reusable Responses
+  # ---------------------------------------------------------------------------
+  responses:
+    BadRequest:
+      description: Invalid input or query parameter error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Category not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  # ---------------------------------------------------------------------------
+  # Schemas / DTOs
+  # ---------------------------------------------------------------------------
+  schemas:
+
+    # ── Response DTOs ────────────────────────────────────────────────────────────
+    
+    ListCategoriesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 20
+            total:
+              type: integer
+              example: 42
+            total_pages:
+              type: integer
+              example: 3
+
+    GetCategoryByIdResponse:
+      type: object
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+        category_name:
+          type: string
+          example: "Electronics"
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-01-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2025-06-01T12:00:00Z"
+
+    # ── Reusable Category DTO ────────────────────────────────────────────────────
+    Category:
+      type: object
+      properties:
+        category_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+        category_name:
+          type: string
+          example: "Electronics"
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-01-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2025-06-01T12:00:00Z"
+
+    # ── Error DTO ─────────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Invalid offset or limit"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        trace_id:
+          type: string
+          example: "abc123xyz"

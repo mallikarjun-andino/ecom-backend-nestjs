@@ -1,0 +1,1 @@
+export const FAVOURITES_QUERY_DAO = Symbol('FAVOURITES_QUERY_DAO');

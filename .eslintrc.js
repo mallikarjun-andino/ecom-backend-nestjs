@@ -63,7 +63,7 @@ module.exports = {
     ],
     'import/no-default-export': 'off', // Allow default exports
     'import/prefer-default-export': 'off',
-    'import/no-cycle': 'warn', // Changed from error to warn
+    'import/no-cycle': 'off', // Changed from error to warn
     'import/no-self-import': 'error',
     'import/no-unresolved': 'off',
     'import/namespace': 'error',

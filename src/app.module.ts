@@ -12,16 +12,23 @@ import {
 } from '@shared/logging/config';
 
 import { ActuatorModule } from './actuator/actuator.module';
+import { AddressModule } from './address/address.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AwsModule } from './aws.module';
+import { CartModule } from './cart/cart.module';
+import { CartItemModule } from './cart-item/cartItem.module';
+import { CategoryModule } from './category/category.module';
 import { AppConfigModule } from './config.module';
 import { ContractFirstModule } from './contract-first/module';
 import { CustomsModule } from './customs/module';
 import { DemoModule } from './demo/demo.module';
 // eslint-disable-next-line import/namespace
 import { SampleSqsListenerModule } from './examples/sqs-listener.module.sample';
+import { FavouritesModule } from './favourites/favourites.module';
+import { ProductModule } from './product/product.module';
 import { SharedModule } from './shared.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -40,6 +47,13 @@ import { SharedModule } from './shared.module';
     SampleSqsListenerModule,
     ContractFirstModule,
     AwsModule,
+    UserModule,
+    ProductModule,
+    CategoryModule,
+    CartModule,
+    CartItemModule,
+    AddressModule,
+    FavouritesModule,
   ],
   controllers: [AppController],
   providers: [

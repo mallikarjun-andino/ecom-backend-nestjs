@@ -1,0 +1,250 @@
+openapi: 3.0.3
+info:
+  title: Favourites Command API
+  version: 1.0.0
+  description: Write operations for managing user favourites in the e-commerce application.
+
+paths:
+
+  # ---------------------------------------------------------------------------
+  # POST /favourites — Add a product to favourites
+  # ---------------------------------------------------------------------------
+  /favourites:
+    post:
+      summary: Add a product to favourites
+      operationId: addFavourite
+      tags:
+        - Favourites
+      parameters:
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddFavouriteRequest'
+      responses:
+        '201':
+          description: Product added to favourites successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddFavouriteResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  # ---------------------------------------------------------------------------
+  # DELETE /favourites/{favourite_id} — Remove a favourite by ID
+  # ---------------------------------------------------------------------------
+  /favourites/{favourite_id}:
+    delete:
+      summary: Remove a favourite by ID
+      operationId: removeFavourite
+      tags:
+        - Favourites
+      parameters:
+        - $ref: '#/components/parameters/FavouriteIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Favourite removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoveFavouriteResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # DELETE /favourites/user/{user_id}/product/{product_id} — Remove favourite by user and product
+  # ---------------------------------------------------------------------------
+  /favourites/user/{user_id}/product/{product_id}:
+    delete:
+      summary: Remove a favourite by user ID and product ID
+      operationId: removeFavouriteByUserAndProduct
+      tags:
+        - Favourites
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - $ref: '#/components/parameters/ProductIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: Favourite removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoveFavouriteByUserProductResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# =============================================================================
+# Components
+# =============================================================================
+components:
+
+  # ---------------------------------------------------------------------------
+  # Reusable Parameters
+  # ---------------------------------------------------------------------------
+  parameters:
+    FavouriteIdPath:
+      name: favourite_id
+      in: path
+      required: true
+      description: UUID of the favourite
+      schema:
+        type: string
+        format: uuid
+        example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+
+    UserIdPath:
+      name: user_id
+      in: path
+      required: true
+      description: UUID of the user
+      schema:
+        type: string
+        format: uuid
+        example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+
+    ProductIdPath:
+      name: product_id
+      in: path
+      required: true
+      description: UUID of the product
+      schema:
+        type: string
+        format: uuid
+        example: "a06dcaf3-d8bd-4516-81e7-1f5a3ac2b39f"
+
+  # ---------------------------------------------------------------------------
+  # Reusable Responses
+  # ---------------------------------------------------------------------------
+  responses:
+    BadRequest:
+      description: Invalid input or validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Favourite already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  # ---------------------------------------------------------------------------
+  # Schemas / DTOs
+  # ---------------------------------------------------------------------------
+  schemas:
+
+    # ── Request DTOs ────────────────────────────────────────────────────────────
+    
+    AddFavouriteRequest:
+      type: object
+      required:
+        - user_id
+        - product_id
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        product_id:
+          type: string
+          format: uuid
+          example: "a06dcaf3-d8bd-4516-81e7-1f5a3ac2b39f"
+
+    # ── Response DTOs ────────────────────────────────────────────────────────────
+    
+    AddFavouriteResponse:
+      type: object
+      properties:
+        favourite_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        product_id:
+          type: string
+          format: uuid
+          example: "a06dcaf3-d8bd-4516-81e7-1f5a3ac2b39f"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+
+    RemoveFavouriteResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Favourite removed successfully"
+        favourite_id:
+          type: string
+          format: uuid
+          example: "d4e5f6a7-b8c9-0123-def4-567890abcdef"
+
+    RemoveFavouriteByUserProductResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Favourite removed successfully"
+        user_id:
+          type: string
+          format: uuid
+          example: "3610fa0c-4f90-41e4-87e6-d2b7653b8545"
+        product_id:
+          type: string
+          format: uuid
+          example: "a06dcaf3-d8bd-4516-81e7-1f5a3ac2b39f"
+
+    # ── Error DTO ─────────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Validation failed: user_id is required"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        trace_id:
+          type: string
+          example: "abc123xyz"
+
+tags:
+  - name: Favourites
+    description: Operations for managing user favourites (write operations only)

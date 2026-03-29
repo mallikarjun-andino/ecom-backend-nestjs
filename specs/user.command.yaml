@@ -1,0 +1,302 @@
+openapi: 3.0.3
+info:
+  title: User Command API
+  version: 1.0.0
+  description: API for managing user write operations
+
+paths:
+
+  # ---------------------------------------------------------------------------
+  # POST /v0/users — Create a new user
+  # ---------------------------------------------------------------------------
+  /v0/users:
+    post:
+      tags:
+        - User Management
+      x-public: false
+      summary: Create a new user
+      operationId: createUser
+      parameters:
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+            example:
+              user_name: "John Doe"
+              email: "john@example.com"
+              password: "StrongPassword123"
+              phone_number: "+919876543210"
+              address: "Bangalore, India"
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ---------------------------------------------------------------------------
+  # PUT /v0/users/{userId} — Update a user
+  # ---------------------------------------------------------------------------
+  /v0/users/{userId}:
+    put:
+      tags:
+        - User Management
+      summary: Update a user
+      operationId: updateUser
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    # -------------------------------------------------------------------------
+    # DELETE /v0/users/{userId} — Delete a user
+    # -------------------------------------------------------------------------
+    delete:
+      tags:
+        - User Management
+      summary: Delete a user
+      operationId: deleteUser
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - $ref: './common/parameters.yaml#/components/parameters/TraceHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/BusinessUnitHeader'
+        - $ref: './common/parameters.yaml#/components/parameters/CountryCodeHeader'
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteUserResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+# =============================================================================
+# Components
+# =============================================================================
+components:
+
+  # ---------------------------------------------------------------------------
+  # Reusable Parameters
+  # ---------------------------------------------------------------------------
+  parameters:
+    UserIdPath:
+      name: userId
+      in: path
+      required: true
+      description: UUID of the user
+      schema:
+        type: string
+        format: uuid
+        example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+  # ---------------------------------------------------------------------------
+  # Reusable Responses
+  # ---------------------------------------------------------------------------
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: User already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  # ---------------------------------------------------------------------------
+  # Schemas / DTOs
+  # ---------------------------------------------------------------------------
+  schemas:
+
+    # ── Request DTOs ────────────────────────────────────────────────────────────
+    
+    CreateUserRequest:
+      type: object
+      required:
+        - user_name
+        - email
+        - password
+      properties:
+        user_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        password:
+          type: string
+          minLength: 6
+          example: "StrongPassword123"
+        phone_number:
+          type: string
+          nullable: true
+          example: "+919876543210"
+        address:
+          type: string
+          nullable: true
+          example: "Bangalore, India"
+
+    UpdateUserRequest:
+      type: object
+      description: All fields are optional for full update
+      properties:
+        user_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "John Updated"
+        phone_number:
+          type: string
+          nullable: true
+          example: "+919876543210"
+        address:
+          type: string
+          nullable: true
+          example: "Mumbai, India"
+
+    # ── Response DTOs ────────────────────────────────────────────────────────────
+    
+    CreateUserResponse:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        user_name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          example: "john@example.com"
+        phone_number:
+          type: string
+          nullable: true
+          example: "+919876543210"
+        address:
+          type: string
+          nullable: true
+          example: "Bangalore, India"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+
+    UpdateUserResponse:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        user_name:
+          type: string
+          example: "John Updated"
+        email:
+          type: string
+          example: "john@example.com"
+        phone_number:
+          type: string
+          nullable: true
+          example: "+919876543210"
+        address:
+          type: string
+          nullable: true
+          example: "Mumbai, India"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-06-20T09:00:00Z"
+
+    DeleteUserResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "User deleted successfully"
+        user_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+    # ── Error DTO ─────────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Validation failed: email must be a valid email"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-06-20T08:00:00Z"
+        trace_id:
+          type: string
+          example: "abc123xyz"
+
+tags:
+  - name: User Management
+    description: Operations for managing users

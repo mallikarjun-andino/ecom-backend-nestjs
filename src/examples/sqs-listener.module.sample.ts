@@ -41,6 +41,7 @@ import { SampleSqsConsumer } from './sqs-listener.sample';
             .enableValidation(true)
             .validationFailureMode(ValidationFailureMode.ACKNOWLEDGE)
             .maxMessagesPerPoll(10)
+            .autoStartup(false)
             .enableBatchAcknowledgement(true)
             .batchAcknowledgementOptions(5, 1000);
         });
