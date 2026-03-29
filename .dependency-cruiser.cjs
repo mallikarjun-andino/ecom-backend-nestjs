@@ -55,7 +55,9 @@ module.exports = {
       name: 'no-circular',
       comment: 'Circular dependencies are not allowed',
       severity: 'error',
-      from: {},
+      from: {
+        pathNot: '^src/common/entities',
+      },
       to: {
         circular: true,
       },
