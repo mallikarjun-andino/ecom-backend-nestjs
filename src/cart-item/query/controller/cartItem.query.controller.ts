@@ -1,7 +1,7 @@
 // cart.item.query.controller.ts
 import { Controller } from '@nestjs/common';
 
-import { CartItemQueryControllerBase } from '@generated/cartitem.query/cartitem.query.controller.base';
+import { CartitemQueryControllerBase } from '@generated/cartitem.query/cartitem.query.controller.base';
 import {
   GetCartItemByIdResponseDto,
   GetCartItemsResponseDto,
@@ -10,7 +10,7 @@ import {
 import { CartItemQueryService } from '../service/cartItem.query.service';
 
 @Controller()
-export class CartItemQueryController extends CartItemQueryControllerBase {
+export class CartItemQueryController extends CartitemQueryControllerBase {
   constructor(private readonly service: CartItemQueryService) {
     super();
   }

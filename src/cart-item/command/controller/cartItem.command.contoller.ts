@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 
-import { CartItemCommandControllerBase } from '@generated/cartitem.command/cartitem.command.controller.base';
+import { CartitemCommandControllerBase } from '@generated/cartitem.command/cartitem.command.controller.base';
 import {
   AddCartItemRequestDto,
   AddCartItemResponseDto,
@@ -12,7 +12,7 @@ import {
 import { CartItemCommandService } from '../service/cartItem.command.service';
 
 @Controller()
-export class CartItemCommandController extends CartItemCommandControllerBase {
+export class CartItemCommandController extends CartitemCommandControllerBase {
   constructor(private readonly service: CartItemCommandService) {
     super();
   }
